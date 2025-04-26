@@ -16,6 +16,7 @@ import { taskListPlugin } from './task-list';
 import { placeholderPlugin } from './placeholder';
 import { lineNumbersPlugin, lineNumbersContainerPlugin } from './line-numbers';
 import { cursorStylePlugin } from './cursor';
+import { menuPlugin, loadMenuStyles } from './menu';
 import 'prosemirror-view/style/prosemirror.css';
 
 interface IOptions {
@@ -101,6 +102,14 @@ class ProseMirrorEngine {
     // 添加光标样式支持
     if (config.boldCursorEnabled()) {
       plugins.push(cursorStylePlugin);
+    }
+
+    // 添加工具栏支持
+    if (config.toolbarEnabled()) {
+      // 加载菜单样式
+      loadMenuStyles();
+      // 添加菜单插件
+      plugins.push(menuPlugin());
     }
 
     // 根据配置添加插件

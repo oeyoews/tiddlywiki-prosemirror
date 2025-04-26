@@ -80,5 +80,15 @@ export default {
   // 获取光标颜色
   getCursorColor() {
     return this.getConfig('cursorColor', '#000');
+  },
+
+  // 是否启用工具栏
+  toolbarEnabled() {
+    return this.getConfig('toolbarEnabled', 'yes') === 'yes';
+  },
+
+  // 获取工具栏位置
+  getToolbarPosition() {
+    return this.getConfig('toolbarPosition', 'top');
   }
 };

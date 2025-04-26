@@ -33,3 +33,5 @@ caption: ProseMirror
 |显示行号 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/lineNumbersEnabled" default="no"> <option value="yes">是</option> <option value="no">否</option> </$select> |
 |加粗光标 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/boldCursorEnabled" default="yes"> <option value="yes">是</option> <option value="no">否</option> </$select> |
 |光标颜色 |<$edit-text tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/cursorColor" default="#000" tag="input" type="color"/> |
+|启用工具栏 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/toolbarEnabled" default="yes"> <option value="yes">是</option> <option value="no">否</option> </$select> |
+|工具栏位置 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/toolbarPosition" default="top"> <option value="top">顶部</option> <option value="bottom">底部</option> </$select> |
