@@ -10,7 +10,7 @@
       // "@/*": [
       //   "./src/*"
       // ],
-      "@/cm6/*": ["./src/tiddlywiki-codemirror-6/*"]
+      "@/pm6/*": ["./src/tiddlywiki-prosemirror/*"]
     }
   },
   "include": ["src", "scripts/**/*.ts"],

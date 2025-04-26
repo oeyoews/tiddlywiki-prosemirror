@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { minify } = require('terser');
 
-const currentDir = path.join(__dirname, '..', 'src/tiddlywiki-codemirror-6');
+const currentDir = path.join(__dirname, '..', 'src/tiddlywiki-prosemirror');
 
 const options = {
   toplevel: true,

@@ -9,7 +9,7 @@ const versionType = process.argv[2] || 'patch'; // 从命令行参数中获取�
 const infoFilePath = path.join(
   __dirname,
   '..',
-  'src/tiddlywiki-codemirror-6/plugin.info'
+  'src/tiddlywiki-prosemirror-6/plugin.info'
 );
 
 // 读取文件内容
