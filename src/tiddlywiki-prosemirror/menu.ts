@@ -14,50 +14,70 @@ import schema from './schema';
 import config from './config';
 
 // 创建图标对象
-const customIcons = {
-  ...icons,
-  // 添加自定义图标
-  strikethrough: {
-    dom: (() => {
-      const span = document.createElement('span');
-      span.textContent = 'S';
-      span.style.textDecoration = 'line-through';
-      return span;
-    })(),
-    css: 'font-weight: bold'
-  },
-  heading1: {
-    dom: (() => {
-      const span = document.createElement('span');
-      span.textContent = 'H1';
-      span.style.fontWeight = 'bold';
-      return span;
-    })()
-  },
-  heading2: {
-    dom: (() => {
-      const span = document.createElement('span');
-      span.textContent = 'H2';
-      span.style.fontWeight = 'bold';
-      return span;
-    })()
-  },
-  heading3: {
-    dom: (() => {
-      const span = document.createElement('span');
-      span.textContent = 'H3';
-      span.style.fontWeight = 'bold';
-      return span;
-    })()
-  },
-  taskList: {
-    dom: (() => {
-      const span = document.createElement('span');
-      span.textContent = '☐';
-      return span;
-    })()
+const customIcons = (() => {
+  // 检查是否在浏览器环境中
+  if (
+    typeof $tw !== 'undefined' &&
+    !$tw.node &&
+    typeof document !== 'undefined'
+  ) {
+    return {
+      // 使用基本图标
+      ...icons,
+      // 添加自定义图标
+      strikethrough: {
+        dom: (() => {
+          const span = document.createElement('span');
+          span.textContent = 'S';
+          span.style.textDecoration = 'line-through';
+          return span;
+        })(),
+        css: 'font-weight: bold'
+      },
+      heading1: {
+        dom: (() => {
+          const span = document.createElement('span');
+          span.textContent = 'H1';
+          span.style.fontWeight = 'bold';
+          return span;
+        })()
+      },
+      heading2: {
+        dom: (() => {
+          const span = document.createElement('span');
+          span.textContent = 'H2';
+          span.style.fontWeight = 'bold';
+          return span;
+        })()
+      },
+      heading3: {
+        dom: (() => {
+          const span = document.createElement('span');
+          span.textContent = 'H3';
+          span.style.fontWeight = 'bold';
+          return span;
+        })()
+      },
+      taskList: {
+        dom: (() => {
+          const span = document.createElement('span');
+          span.textContent = '☐';
+          return span;
+        })()
+      },
+      // 确保所有需要的图标都存在
+      bulletList: icons.bulletList,
+      orderedList: icons.orderedList,
+      blockquote: icons.blockquote,
+      strong: icons.strong,
+      em: icons.em,
+      code: icons.code
+    };
+  } else {
+    // 在 Node 环境中返回基本图标
+    return { ...icons };
   }
-};
+})();
 
 // 创建文本格式菜单项
 function buildTextFormattingMenu() {
@@ -149,7 +169,7 @@ function buildBlockFormattingMenu() {
   headingItems.push(
     blockTypeItem(schema.nodes.heading, {
       title: '一级标题',
-      label: '一级标题',
+      label: 'H1',
       attrs: { level: 1 },
       icon: customIcons.heading1
     })
@@ -159,7 +179,7 @@ function buildBlockFormattingMenu() {
   headingItems.push(
     blockTypeItem(schema.nodes.heading, {
       title: '二级标题',
-      label: '二级标题',
+      label: 'H2',
       attrs: { level: 2 },
       icon: customIcons.heading2
     })
@@ -169,7 +189,7 @@ function buildBlockFormattingMenu() {
   headingItems.push(
     blockTypeItem(schema.nodes.heading, {
       title: '三级标题',
-      label: '三级标题',
+      label: 'H3',
       attrs: { level: 3 },
       icon: customIcons.heading3
     })
@@ -190,7 +210,8 @@ function buildBlockFormattingMenu() {
   blockItems.push(
     blockTypeItem(schema.nodes.code_block, {
       title: '代码块',
-      label: '代码块'
+      label: '代码',
+      icon: customIcons.code
     })
   );
 
@@ -259,6 +280,7 @@ function buildInsertMenu() {
     new MenuItem({
       title: '分隔线',
       label: '分隔线',
+      icon: { text: '—', css: 'font-weight: bold' },
       run: (state, dispatch) => {
         if (dispatch) {
           const { $from } = state.selection;
@@ -333,16 +355,32 @@ function buildMenu() {
 
 // 创建菜单栏插件
 export const menuPlugin = () => {
-  // 创建菜单栏
-  return menuBar({
-    floating: false,
-    content: buildMenu()
+  // 检查是否在浏览器环境中
+  if (
+    typeof $tw !== 'undefined' &&
+    !$tw.node &&
+    typeof document !== 'undefined'
+  ) {
+    // 创建菜单栏
+    return menuBar({
+      floating: false,
+      content: buildMenu()
+    });
+  }
+  // 在 Node 环境中返回空插件
+  return new Plugin({
+    key: new PluginKey('empty-menu')
   });
 };
 
 // 加载 prosemirror-menu 样式
 export function loadMenuStyles() {
-  if (typeof document !== 'undefined') {
+  // 使用 $tw.node 判断是否在 Node 环境中
+  if (
+    typeof $tw !== 'undefined' &&
+    !$tw.node &&
+    typeof document !== 'undefined'
+  ) {
     // 检查是否已经加载了样式
     if (!document.getElementById('prosemirror-menu-styles')) {
       // 创建样式元素
@@ -352,21 +390,21 @@ export function loadMenuStyles() {
       // 添加 prosemirror-menu 样式
       style.textContent = `
         .ProseMirror-menubar {
-          border-top-left-radius: 4px;
-          border-top-right-radius: 4px;
           position: relative;
           min-height: 1em;
           color: #666;
-          padding: 1px 6px;
+          padding: 4px 6px;
           top: 0;
           left: 0;
           right: 0;
-          border-bottom: 1px solid silver;
+          border-bottom: 1px solid #ddd;
           background: #f5f5f5;
           z-index: 10;
           -moz-box-sizing: border-box;
           box-sizing: border-box;
           overflow: visible;
+          display: flex;
+          flex-wrap: wrap;
         }
 
         .ProseMirror-menubar-wrapper {
@@ -376,6 +414,7 @@ export function loadMenuStyles() {
         .ProseMirror-menubar .ProseMirror-menu {
           display: flex;
           flex-wrap: wrap;
+          align-items: center;
         }
 
         .ProseMirror-menu-dropdown, .ProseMirror-menu-dropdown-menu {
@@ -387,7 +426,8 @@ export function loadMenuStyles() {
           vertical-align: 1px;
           cursor: pointer;
           position: relative;
-          padding-right: 15px;
+          padding: 4px 15px 4px 8px;
+          margin: 2px 4px;
         }
 
         .ProseMirror-menu-dropdown-wrap {
@@ -413,10 +453,11 @@ export function loadMenuStyles() {
           color: #666;
           border: 1px solid #aaa;
           border-radius: 4px;
-          padding: 2px;
+          padding: 4px;
           z-index: 15;
-          min-width: 6em;
+          min-width: 8em;
           margin-top: 2px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .ProseMirror-menu-dropdown-menu {
@@ -425,11 +466,14 @@ export function loadMenuStyles() {
 
         .ProseMirror-menu-dropdown-item {
           cursor: pointer;
-          padding: 2px 8px 2px 4px;
+          padding: 6px 8px;
+          margin: 2px 0;
+          display: block;
+          width: 100%;
         }
 
         .ProseMirror-menu-dropdown-item:hover {
-          background: #f2f2f2;
+          background: rgba(0, 0, 0, 0.05);
         }
 
         .ProseMirror-menu-submenu-wrap {
@@ -475,30 +519,56 @@ export function loadMenuStyles() {
 
         .ProseMirror-menuitem {
           margin: 2px 4px;
-          padding: 2px 6px;
-          border-radius: 4px;
+          padding: 4px 8px;
           cursor: pointer;
-          display: flex;
+          display: inline-flex;
           align-items: center;
           justify-content: center;
           transition: background-color 0.2s ease;
+          min-width: 30px;
+          height: 30px;
         }
 
         .ProseMirror-menuitem:hover {
-          background-color: #e0e0e0;
+          background-color: rgba(0, 0, 0, 0.05);
         }
 
         .ProseMirror-menuitem.ProseMirror-menu-active {
-          background-color: #e6f2ff;
           color: #0366d6;
+          background-color: rgba(3, 102, 214, 0.1);
         }
 
         .ProseMirror-icon {
           display: inline-block;
-          line-height: .8;
-          vertical-align: -2px;
-          padding: 2px 8px;
+          line-height: 1;
+          vertical-align: middle;
+          padding: 2px 4px;
           cursor: pointer;
+        }
+
+        /* 修复菜单组之间的间距 */
+        .ProseMirror-menu > div {
+          margin-right: 8px;
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        /* 修复下拉菜单项的样式 */
+        .ProseMirror-menu-dropdown-menu {
+          width: auto;
+          min-width: 120px;
+        }
+
+        /* 修复编辑器与工具栏的连接 */
+        .ProseMirror-menubar + .ProseMirror {
+          border-top: none;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+        }
+
+        /* 图标样式 */
+        .ProseMirror-icon span {
+          font-size: 14px;
         }
       `;
 

@@ -18,6 +18,7 @@ import { lineNumbersPlugin, lineNumbersContainerPlugin } from './line-numbers';
 import { cursorStylePlugin } from './cursor';
 import { menuPlugin, loadMenuStyles } from './menu';
 import 'prosemirror-view/style/prosemirror.css';
+import 'prosemirror-menu/style/menu.css';
 
 interface IOptions {
   widget: IWidget;
