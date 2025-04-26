@@ -16,6 +16,7 @@ import { taskListPlugin } from './task-list';
 import { placeholderPlugin } from './placeholder';
 import { lineNumbersPlugin, lineNumbersContainerPlugin } from './line-numbers';
 import { cursorStylePlugin } from './cursor';
+import 'prosemirror-view/style/prosemirror.css';
 
 interface IOptions {
   widget: IWidget;
@@ -23,7 +24,14 @@ interface IOptions {
   nextSibling: Node;
   value?: string;
   type?: string;
+  onChange?: (content: { markdown: string; plainText: string }) => void;
 }
+
+// 定义事件类型
+type EditorEventType = 'change' | 'focus' | 'blur' | 'keydown' | 'keyup';
+
+// 定义事件监听器类型
+type EditorEventListener = (data: any) => void;
 
 class ProseMirrorEngine {
   domNode: TW_Element;
@@ -34,11 +42,24 @@ class ProseMirrorEngine {
   private editor: EditorView;
   private state: EditorState;
   private dragCancel: boolean = false;
+  private eventListeners: Map<EditorEventType, Set<EditorEventListener>> =
+    new Map();
+  private onChange:
+    | ((content: { markdown: string; plainText: string }) => void)
+    | undefined;
 
   constructor(options = {} as IOptions) {
     this.widget = options.widget;
     this.parentNode = options.parentNode;
     this.nextSibling = options.nextSibling;
+    this.onChange = options.onChange;
+
+    // 初始化事件监听器映射
+    this.eventListeners.set('change', new Set());
+    this.eventListeners.set('focus', new Set());
+    this.eventListeners.set('blur', new Set());
+    this.eventListeners.set('keydown', new Set());
+    this.eventListeners.set('keyup', new Set());
 
     this.domNode = this.widget.document.createElement('div');
     this.domNode.style.overflow = 'auto';
@@ -61,8 +82,8 @@ class ProseMirrorEngine {
         console.log('Markdown 内容:', this.getText());
         console.log('纯文本内容:', this.getPlainText());
         return {
-          markdown: this.getText()
-          // plainText: this.getPlainText()
+          markdown: this.getText(),
+          plainText: this.getPlainText()
         };
       };
 
@@ -81,11 +102,33 @@ class ProseMirrorEngine {
         return this.saveContentToFile(format, filename);
       };
 
+      // 添加事件监听方法
+      (window as any).addProseMirrorEventListener = (
+        eventType: EditorEventType,
+        listener: EditorEventListener
+      ) => {
+        this.addEventListener(eventType, listener);
+      };
+
+      // 移除事件监听方法
+      (window as any).removeProseMirrorEventListener = (
+        eventType: EditorEventType,
+        listener: EditorEventListener
+      ) => {
+        this.removeEventListener(eventType, listener);
+      };
+
       console.log('ProseMirror 编辑器已初始化。可以使用以下方法：');
       console.log('- getProseMirrorContent(): 获取编辑器内容');
       console.log('- exportProseMirrorContent(format): 导出并复制编辑器内容');
       console.log(
         '- saveProseMirrorContent(format, filename): 保存编辑器内容到文件'
+      );
+      console.log(
+        '- addProseMirrorEventListener(eventType, listener): 添加事件监听器'
+      );
+      console.log(
+        '- removeProseMirrorEventListener(eventType, listener): 移除事件监听器'
       );
     }
 
@@ -155,11 +198,46 @@ class ProseMirrorEngine {
     this.editor = new EditorView(this.domNode, {
       state: this.state,
       dispatchTransaction: (transaction) => {
-        const newState = this.editor.state.apply(transaction);
+        const oldState = this.editor.state;
+        const newState = oldState.apply(transaction);
         this.editor.updateState(newState);
-        // 如果内容发生变化，根据配置决定是否自动保存
-        if (transaction.docChanged && config.autoSave()) {
-          this.widget.saveChanges && this.widget.saveChanges();
+
+        // 如果内容发生变化
+        if (transaction.docChanged) {
+          // 触发change事件
+          this.triggerEvent('change', {
+            transaction,
+            oldState,
+            newState,
+            content: {
+              markdown: docToText(newState.doc),
+              plainText: extractPlainText(newState.doc)
+            }
+          });
+
+          // 根据配置决定是否自动保存
+          if (config.autoSave()) {
+            this.widget.saveChanges && this.widget.saveChanges();
+          }
+        }
+      },
+      // 处理焦点事件
+      handleDOMEvents: {
+        focus: (view, event) => {
+          this.triggerEvent('focus', { view, event });
+          return false; // 返回false以允许其他处理程序处理事件
+        },
+        blur: (view, event) => {
+          this.triggerEvent('blur', { view, event });
+          return false;
+        },
+        keydown: (view, event) => {
+          this.triggerEvent('keydown', { view, event });
+          return false;
+        },
+        keyup: (view, event) => {
+          this.triggerEvent('keyup', { view, event });
+          return false;
         }
       }
     });
@@ -404,6 +482,63 @@ class ProseMirrorEngine {
     }
     this.editor.focus();
     return this.getText();
+  }
+
+  /**
+   * 添加事件监听器
+   * @param eventType 事件类型
+   * @param listener 监听器函数
+   */
+  addEventListener(eventType: EditorEventType, listener: EditorEventListener) {
+    const listeners = this.eventListeners.get(eventType);
+    if (listeners) {
+      listeners.add(listener);
+    }
+  }
+
+  /**
+   * 移除事件监听器
+   * @param eventType 事件类型
+   * @param listener 监听器函数
+   */
+  removeEventListener(
+    eventType: EditorEventType,
+    listener: EditorEventListener
+  ) {
+    const listeners = this.eventListeners.get(eventType);
+    if (listeners) {
+      listeners.delete(listener);
+    }
+  }
+
+  /**
+   * 触发事件
+   * @param eventType 事件类型
+   * @param data 事件数据
+   */
+  private triggerEvent(eventType: EditorEventType, data: any) {
+    const listeners = this.eventListeners.get(eventType);
+    if (listeners) {
+      listeners.forEach((listener) => {
+        try {
+          listener(data);
+        } catch (e) {
+          console.error(`Error in ${eventType} event listener:`, e);
+        }
+      });
+    }
+
+    // 如果是内容变化事件，同时调用onChange回调
+    if (eventType === 'change' && this.onChange) {
+      try {
+        this.onChange({
+          markdown: this.getText(),
+          plainText: this.getPlainText()
+        });
+      } catch (e) {
+        console.error('Error in onChange callback:', e);
+      }
+    }
   }
 }
 
