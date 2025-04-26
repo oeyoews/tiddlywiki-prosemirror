@@ -14,6 +14,8 @@ import { slashCommandsPlugin } from './slash-commands';
 import { editorKeymap } from './keyboard';
 import { taskListPlugin } from './task-list';
 import { placeholderPlugin } from './placeholder';
+import { lineNumbersPlugin, lineNumbersContainerPlugin } from './line-numbers';
+import { cursorStylePlugin } from './cursor';
 
 interface IOptions {
   widget: IWidget;
@@ -40,11 +42,14 @@ class ProseMirrorEngine {
 
     this.domNode = this.widget.document.createElement('div');
     this.domNode.style.overflow = 'auto';
+    this.domNode.className = 'prosemirror-editor-container';
 
     this.parentNode.insertBefore(this.domNode, this.nextSibling);
     this.widget.domNodes.push(this.domNode);
 
-    this.domNode.className = this.widget.editClass ? this.widget.editClass : '';
+    if (this.widget.editClass) {
+      this.domNode.className += ' ' + this.widget.editClass;
+    }
     this.domNode.style.display = 'inline-block';
 
     // 初始化ProseMirror状态
@@ -71,6 +76,17 @@ class ProseMirrorEngine {
     // 添加占位符支持
     if (config.placeholderEnabled()) {
       plugins.push(placeholderPlugin);
+    }
+
+    // 添加行号支持
+    if (config.lineNumbersEnabled()) {
+      plugins.push(lineNumbersPlugin);
+      plugins.push(lineNumbersContainerPlugin);
+    }
+
+    // 添加光标样式支持
+    if (config.boldCursorEnabled()) {
+      plugins.push(cursorStylePlugin);
     }
 
     // 根据配置添加插件

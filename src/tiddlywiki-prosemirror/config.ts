@@ -62,5 +62,20 @@ export default {
   // 获取占位符文本
   getPlaceholder() {
     return this.getConfig('placeholder', '在此输入内容...');
+  },
+
+  // 是否启用行号
+  lineNumbersEnabled() {
+    return this.getConfig('lineNumbersEnabled', 'no') === 'yes';
+  },
+
+  // 是否启用加粗光标
+  boldCursorEnabled() {
+    return this.getConfig('boldCursorEnabled', 'yes') === 'yes';
+  },
+
+  // 获取光标颜色
+  getCursorColor() {
+    return this.getConfig('cursorColor', '#000');
   }
 };

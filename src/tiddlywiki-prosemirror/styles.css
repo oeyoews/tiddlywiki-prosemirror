@@ -35,6 +35,98 @@ li.task-list-item[data-checked="true"]>div>p {
   font-style: italic;
 }
 
+/* 行号样式 */
+.prosemirror-editor-with-line-numbers {
+  display: flex !important;
+  flex-direction: row;
+  position: relative;
+}
+
+.prosemirror-line-numbers-container {
+  width: 3em;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 8px 0;
+  color: #999;
+  font-size: 12px;
+  text-align: right;
+  user-select: none;
+  overflow: hidden;
+}
+
+.prosemirror-line-number {
+  padding: 0 5px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+  position: absolute;
+  left: -3em;
+  width: 2.5em;
+  user-select: none;
+  pointer-events: none;
+}
+
+.prosemirror-editor-with-line-numbers .ProseMirror {
+  margin-left: 0;
+  flex: 1;
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* 编辑器容器样式 */
+.prosemirror-editor-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 编辑器样式 */
+.ProseMirror {
+  outline: none !important;
+  /* 移除黑色边框聚焦样式 */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  /* 加粗光标样式 */
+  caret-color: #000;
+  caret-width: 2px;
+}
+
+/* 自定义光标样式 */
+.ProseMirror .ProseMirror-cursor {
+  border-left: 2px solid #000;
+  border-right: none;
+  margin-left: -1px;
+  pointer-events: none;
+}
+
+/* 在不同背景下的光标样式 */
+.ProseMirror-focused .ProseMirror-cursor {
+  animation: cursor-blink 1.2s step-end infinite;
+}
+
+/* 光标闪烁动画 */
+@keyframes cursor-blink {
+
+  from,
+  to {
+    border-left-color: #000;
+  }
+
+  50% {
+    border-left-color: transparent;
+  }
+}
+
+.ProseMirror:focus {
+  border-color: #aaa;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
 /* 斜杠命令菜单样式 */
 .prosemirror-slash-menu {
   position: absolute;
