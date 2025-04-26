@@ -1,110 +1,143 @@
-<!--
-This README provides an overview of the `tiddlywiki-codemirror-6` plugin, which has entered maintenance mode as of 2024-01-24. The plugin focuses on bug fixes and compatibility improvements, with no major changes planned. A minimal version of the plugin is available in the `basic` branch.
+# TiddlyWiki ProseMirror 编辑器
 
-### Key Features
-- **Emoji Completion**: Provides emoji suggestions for enhanced text editing.
-- **Wiki Mode**: Enables a specialized mode for editing TiddlyWiki content.
-- **Code Snippet Completion**: Offers auto-completion for code snippets.
-- **Tiddler Completion**: Facilitates linking and referencing TiddlyWiki tiddlers.
-- **Widget Completion**: Assists in inserting and editing widgets.
-- **Image Completion**: Simplifies adding and managing images.
-- **Color Customization**: Allows users to modify colors dynamically.
-- **Link Preview**: Displays previews for links within the editor.
+这个插件为 TiddlyWiki 提供了一个基于 ProseMirror 的现代化富文本编辑器，替代了默认的编辑器，提供更强大的编辑体验和 Markdown 支持。
 
-### File Structure
-The project is organized into multiple directories, including:
-- `config`: Configuration files for the plugin.
-- `modules`: Contains completions, constants, extensions, and keymaps.
-- `tiddlers`: Includes auto-generated configurations, icons, macros, palettes, shortcuts, and UI components.
-- `types`: Type definitions for the plugin.
-- `utils`: Utility functions and helpers.
+## 特性
 
-### Development
-To contribute or debug the plugin locally:
-1. Clone the repository with `git clone --depth 1`.
-2. Install dependencies using `pnpm install`.
-3. Use `pnpm dev` for local debugging or `pnpm build` to build the plugin.
+- **现代化富文本编辑**：基于 ProseMirror 的强大编辑器
+- **Markdown 支持**：自动检测和解析 Markdown 语法
+- **斜杠命令**：输入 `/` 快速插入各种元素
+- **快捷键支持**：丰富的编辑快捷键
+- **任务列表**：支持可交互的任务列表
+- **占位符提示**：在编辑器为空时显示提示文本
+- **行号显示**：方便代码定位和引用
+- **自定义光标**：支持加粗光标和自定义光标颜色
+- **导出 Markdown**：将编辑内容导出为 Markdown 格式
 
-### Demos
-- **StackBlitz Demo**: A live demo showcasing the plugin's features.
-- **Vercel Demo**: Hosted demo for testing the plugin.
-- **GitHub Pages Demo**: Another hosted demo for plugin exploration.
+## Markdown 支持
 
-### Badges
-Dynamic JSON badges are included to display the current version of the plugin.
+编辑器支持以下 Markdown 语法：
 
-For more details, refer to the repository's documentation and explore the provided demos.
--->
-<!-- > [!IMPORTANT]
-> tiddlywiki-codemirror-6 插件进入维护状态，接下来主要修复 BUG, 提升插件的兼容性，整体上不会再进行大的改动 (2024-01-24). 如果你想要查看最小版本的 tiddlywiki-codemirror-6 插件，请查看 `basic` 分支。 -->
+- **标题**：输入 `## 标题` 后按空格自动转换为二级标题
+- **粗体**：输入 `**粗体文本**` 自动转换
+- **斜体**：输入 `*斜体文本*` 自动转换
+- **链接**：输入 `[链接文本](https://example.com)` 自动转换
+- **列表**：
+  - 无序列表：输入 `- ` 或 `* ` 或 `+ ` 后按空格自动转换
+  - 有序列表：输入 `1. ` 后按空格自动转换
+  - 列表连续创建：在列表项中按回车键自动创建新的列表项
+- **代码块**：输入 ``` 自动创建代码块
+- **行内代码**：输入 `` `代码` `` 自动转换
+- **引用**：输入 `> ` 后按空格自动转换
+- **分隔线**：输入 `---` 或 `***` 或 `___` 自动转换
+- **图片**：输入 `![替代文本](图片URL)` 自动转换
+- **表格**：输入 `| 标题1 | 标题2 |` 后按空格自动创建表格
+- **任务列表**：输入 `[ ]` 或 `[x]` 后按空格自动创建任务列表项
 
-> [!IMPORTANT]
-> The tiddlywiki-codemirror-6 plugin has entered maintenance status. Next, we will mainly fix bugs and improve the compatibility of the plugin. No major changes will be made overall (2024-01-24). If you want to view the smallest version of tiddlywiki-codemirror-6 plugin, please check out the `basic` branch.
+## 斜杠命令
 
-[stackblitz codemirror6 demo](https://stackblitz.com/~/github.com/oeyoews/tiddlywiki-codemirror6)
+在编辑器中输入 `/` 可以打开命令菜单，快速插入各种元素。您可以继续输入关键词来过滤命令。
 
-https://user-images.githubusercontent.com/72405338/294956491-948b791f-04e1-4447-a5d3-81ebb13619de.mp4
+常用命令：
 
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Foeyoews%2Ftiddlywiki-codemirror6%2Fmain%2Fpackage.json&query=version&style=flat-square&logo=Codemirror&logoColor=white&label=codemirror&labelColor=black&color=black">
+- `/h1` - 插入一级标题
+- `/h2` - 插入二级标题
+- `/h3` - 插入三级标题
+- `/bullet` - 插入无序列表
+- `/number` - 插入有序列表
+- `/taskList` - 插入任务列表
+- `/quote` - 插入引用块
+- `/code` - 插入代码块
+- `/hr` - 插入水平分隔线
 
-## Preview
+## 快捷键
 
-- [vercel demo](https://tiddlywiki-codemirror6.vercel.app) or [gh-page demo](https://oeyoews.github.io/tiddlywiki-codemirror6)
+编辑器支持以下快捷键：
 
-| Emoji 补全                   | Wiki Mode                           | 代码片段补全                               |
-| ---------------------------- | ----------------------------------- | ------------------------------------------ |
-| ![emoji](./assets/emoji.png) | ![wikimode](./assets/wiki-mode.png) | ![usersnippets](./assets/usersnippets.gif) |
+- `Ctrl+B` - 粗体
+- `Ctrl+I` - 斜体
+- `Ctrl+K` - 创建链接
+- `Ctrl+`` - 行内代码
+- `Shift+Ctrl+1-6` - 一级到六级标题
+- `Shift+Ctrl+0` - 普通段落
+- `Shift+Ctrl+\` - 代码块
+- `Shift+Ctrl+]` - 引用块
+- `Shift+Ctrl+8` - 无序列表
+- `Shift+Ctrl+9` - 有序列表
+- `Shift+Ctrl+T` - 任务列表
+- `Ctrl+Z` - 撤销
+- `Ctrl+Y` 或 `Shift+Ctrl+Z` - 重做
+- `Tab` - 在代码块中按下可跳出代码块
+- `Shift+Enter` - 在代码块中按下可跳出代码块
 
-| tiddler 补全               | widget 补全                    | 图片补全                     |
-| -------------------------- | ------------------------------ | ---------------------------- |
-| ![link](./assets/link.gif) | ![widget](./assets/widget.gif) | ![image](./assets/image.gif) |
+## 安装
 
-| 颜色修改                     | Link 预览                                 |
-| ---------------------------- | ----------------------------------------- |
-| ![color](./assets/color.png) | ![linkpreview](./assets/link-preview.gif) |
+1. 下载插件文件
+2. 将插件拖放到您的 TiddlyWiki 中
+3. 保存并刷新 TiddlyWiki
 
-## FileStruct
+或者通过 TiddlyWiki 插件库安装：
 
-```
-📦tiddlywiki-codemirror-6
- ┣ 📂config
- ┣ 📂modules
- ┃ ┣ 📂completions
- ┃ ┃ ┣ 📂sources
- ┃ ┣ 📂constants
- ┃ ┣ 📂extensions
- ┃ ┃ ┣ 📂inlineSuggestion
- ┃ ┣ 📂keymap
- ┣ 📂tiddlers
- ┃ ┣ 📂auto-generated-config
- ┃ ┣ 📂icons
- ┃ ┣ 📂lib
- ┃ ┃ ┣ 📂editor
- ┃ ┃ ┃ ┗ 📂operations
- ┃ ┃ ┗ 📂subclasses
- ┃ ┃ ┃ ┣ 📂editor
- ┃ ┣ 📂macros
- ┃ ┣ 📂palettes
- ┃ ┣ 📂Shortcuts
- ┃ ┃ ┗ 📂fullscreen
- ┃ ┃ ┃ ┣ 📂ShortcutInfo
- ┃ ┃ ┃ ┗ 📂shortcuts
- ┃ ┣ 📂ui
- ┃ ┃ ┣ 📂ControlPanel
- ┃ ┃ ┣ 📂EditorToolbar
- ┃ ┃ ┣ 📂EditorTools
- ┃ ┃ ┣ 📂EditTemplate
- ┃ ┃ ┗ 📂Templates
- ┣ 📂types
- ┣ 📂utils
-```
+1. 打开控制面板 -> 插件 -> 获取更多插件
+2. 搜索 "ProseMirror"
+3. 安装插件并重启 TiddlyWiki
 
-## Dev
+## 配置
+
+可以在控制面板中找到 ProseMirror 编辑器的配置选项：
+
+- 启用/禁用 Markdown 支持
+- 自动检测 Markdown 格式
+- 强制使用 Markdown 格式
+- 启用/禁用斜杠命令
+- 启用/禁用快捷键
+- 启用/禁用占位符
+- 自定义占位符文本
+- 启用/禁用行号显示
+- 启用/禁用加粗光标
+- 自定义光标颜色
+
+## 获取 Markdown 内容
+
+编辑器工具栏中提供了两个按钮，用于获取编辑器的 Markdown 内容：
+
+- 获取 Markdown - 将编辑器内容以 Markdown 格式保存到临时条目中，可以复制到剪贴板或下载为 .md 文件
+- 控制台输出 - 在浏览器控制台输出编辑器的 Markdown 内容
+
+## 开发
 
 ```shell
-git clone --depth 1 https://github.com/oeyoews/tiddlywiki-codemirror6
-cd tiddlywiki-codemirror6
-pnpm install ## add dependencies
-pnpm dev  ## local debug plugins
-pnpm build  ## build codemirror6 plugins
+git clone https://github.com/oeyoews/tiddlywiki-prosemirror
+cd tiddlywiki-prosemirror
+pnpm install
+pnpm dev  # 本地调试插件
+pnpm build  # 构建插件
 ```
+
+## 兼容性
+
+此插件需要 TiddlyWiki 5.3.4 或更高版本。
+
+## 更新日志
+
+### 1.0.0
+- 初始版本
+- 基本的 ProseMirror 编辑器功能
+- 支持基本文本格式化
+- 支持列表和其他结构化内容
+- 使用 prosemirror-markdown 库支持 Markdown 语法
+- 自动检测 Markdown 格式
+- 可配置的 Markdown 支持选项
+- 支持手动输入 Markdown 语法自动转换
+- 支持斜杠命令
+- 支持快捷键操作
+- 增强的 Markdown 语法支持
+- 支持任务列表的渲染和交互
+- 支持占位符提示
+- 支持显示行号
+- 支持加粗光标和自定义光标颜色
+- 优化整体布局和间距，提升编辑体验
+
+## 许可证
+
+MIT
