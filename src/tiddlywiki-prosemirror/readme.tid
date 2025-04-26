@@ -75,6 +75,8 @@ type: text/vnd.tiddlywiki
 * `Shift+Ctrl+T` - 任务列表
 * `Ctrl+Z` - 撤销
 * `Ctrl+Y` 或 `Shift+Ctrl+Z` - 重做
+* `Tab` - 在代码块中按下可跳出代码块
+* `Shift+Enter` - 在代码块中按下可跳出代码块
 
 !! 配置
 

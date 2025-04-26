@@ -93,7 +93,95 @@ const basicKeymap = {
   'Alt-ArrowUp': joinUp,
   'Alt-ArrowDown': joinDown,
   Escape: selectParentNode,
-  'Ctrl-Enter': exitCode
+  'Ctrl-Enter': exitCode,
+
+  // 从代码块跳出
+  Tab: (state, dispatch, view) => {
+    // 检查当前是否在代码块中
+    const { $from } = state.selection;
+    const node = $from.node();
+    const inCodeBlock =
+      node.type === schema.nodes.code_block ||
+      $from.parent.type === schema.nodes.code_block;
+
+    if (!inCodeBlock) return false;
+
+    // 如果在代码块中，按Tab键跳出代码块
+    if (dispatch) {
+      // 创建一个新的段落节点
+      const paragraph = schema.nodes.paragraph.create();
+
+      // 获取代码块的位置
+      let pos = $from.pos;
+      let depth = $from.depth;
+
+      // 找到代码块的结束位置
+      while (depth > 0 && $from.node(depth).type !== schema.nodes.code_block) {
+        depth--;
+      }
+
+      if (depth > 0) {
+        const nodeEndPos = $from.end(depth);
+
+        // 在代码块后插入新段落
+        const tr = state.tr.insert(nodeEndPos, paragraph);
+
+        // 将光标移动到新段落
+        tr.setSelection(
+          state.selection.constructor.near(tr.doc.resolve(nodeEndPos + 1))
+        );
+
+        dispatch(tr);
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  // 另一种跳出方式：Shift+Enter
+  'Shift-Enter': (state, dispatch, view) => {
+    // 检查当前是否在代码块中
+    const { $from } = state.selection;
+    const node = $from.node();
+    const inCodeBlock =
+      node.type === schema.nodes.code_block ||
+      $from.parent.type === schema.nodes.code_block;
+
+    if (!inCodeBlock) return false;
+
+    // 如果在代码块中，按Shift+Enter跳出代码块
+    if (dispatch) {
+      // 创建一个新的段落节点
+      const paragraph = schema.nodes.paragraph.create();
+
+      // 获取代码块的位置
+      let pos = $from.pos;
+      let depth = $from.depth;
+
+      // 找到代码块的结束位置
+      while (depth > 0 && $from.node(depth).type !== schema.nodes.code_block) {
+        depth--;
+      }
+
+      if (depth > 0) {
+        const nodeEndPos = $from.end(depth);
+
+        // 在代码块后插入新段落
+        const tr = state.tr.insert(nodeEndPos, paragraph);
+
+        // 将光标移动到新段落
+        tr.setSelection(
+          state.selection.constructor.near(tr.doc.resolve(nodeEndPos + 1))
+        );
+
+        dispatch(tr);
+        return true;
+      }
+    }
+
+    return false;
+  }
 };
 
 // 创建并导出快捷键映射
