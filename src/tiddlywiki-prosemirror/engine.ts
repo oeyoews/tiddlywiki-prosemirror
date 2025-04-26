@@ -43,6 +43,8 @@ class ProseMirrorEngine {
     this.domNode = this.widget.document.createElement('div');
     this.domNode.style.overflow = 'auto';
     this.domNode.className = 'prosemirror-editor-container';
+    this.domNode.style.minHeight = '200px'; // 设置最小高度
+    this.domNode.style.height = 'auto'; // 允许自动增长
 
     this.parentNode.insertBefore(this.domNode, this.nextSibling);
     this.widget.domNodes.push(this.domNode);
@@ -50,7 +52,7 @@ class ProseMirrorEngine {
     if (this.widget.editClass) {
       this.domNode.className += ' ' + this.widget.editClass;
     }
-    this.domNode.style.display = 'inline-block';
+    this.domNode.style.display = 'block'; // 改为块级显示，占据整行
 
     // 初始化ProseMirror状态
     const plugins = [keymap(baseKeymap)];

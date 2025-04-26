@@ -106,6 +106,8 @@ li.task-list-item[data-checked="true"]>div>p {
 .prosemirror-editor-container {
   width: 100%;
   box-sizing: border-box;
+  min-height: 200px;
+  /* 设置最小高度 */
 }
 
 /* 编辑器样式 */
@@ -125,6 +127,10 @@ li.task-list-item[data-checked="true"]>div>p {
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+  /* 高度设置 */
+  min-height: 180px;
+  /* 编辑器内容区域最小高度 */
+  height: 100%;
 }
 
 /* 修复块级元素margin问题 - 减小间距 */
