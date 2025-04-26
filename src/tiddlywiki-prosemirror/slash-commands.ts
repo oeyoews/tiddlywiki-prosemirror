@@ -8,7 +8,11 @@ interface SlashCommand {
   title: string;
   description: string;
   icon?: string;
-  execute: (state: EditorState, dispatch: (tr: Transaction) => void, view: EditorView) => boolean;
+  execute: (
+    state: EditorState,
+    dispatch: (tr: Transaction) => void,
+    view: EditorView
+  ) => boolean;
 }
 
 // 创建斜杠命令列表
@@ -22,9 +26,14 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.heading, { level: 1 });
+        const tr = state.tr.setBlockType(
+          range.start,
+          range.end,
+          schema.nodes.heading,
+          { level: 1 }
+        );
         dispatch(tr);
       }
       return true;
@@ -39,9 +48,14 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.heading, { level: 2 });
+        const tr = state.tr.setBlockType(
+          range.start,
+          range.end,
+          schema.nodes.heading,
+          { level: 2 }
+        );
         dispatch(tr);
       }
       return true;
@@ -56,9 +70,14 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.heading, { level: 3 });
+        const tr = state.tr.setBlockType(
+          range.start,
+          range.end,
+          schema.nodes.heading,
+          { level: 3 }
+        );
         dispatch(tr);
       }
       return true;
@@ -73,9 +92,19 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.bullet_list);
+        // 创建列表项
+        const listItem = schema.nodes.list_item.create(
+          null,
+          schema.nodes.paragraph.create()
+        );
+
+        // 创建无序列表
+        const bulletList = schema.nodes.bullet_list.create(null, [listItem]);
+
+        // 替换当前块
+        const tr = state.tr.replaceWith(range.start, range.end, bulletList);
         dispatch(tr);
       }
       return true;
@@ -90,9 +119,43 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.ordered_list);
+        // 创建列表项
+        const listItem = schema.nodes.list_item.create(
+          null,
+          schema.nodes.paragraph.create()
+        );
+
+        // 创建有序列表
+        const orderedList = schema.nodes.ordered_list.create(null, [listItem]);
+
+        // 替换当前块
+        const tr = state.tr.replaceWith(range.start, range.end, orderedList);
+        dispatch(tr);
+      }
+      return true;
+    }
+  },
+  {
+    id: 'taskList',
+    title: '任务列表',
+    description: '插入任务列表',
+    icon: '☐',
+    execute: (state, dispatch) => {
+      const { $from, $to } = state.selection;
+      const range = $from.blockRange($to);
+      if (!range) return false;
+
+      if (dispatch) {
+        // 创建任务列表项
+        const taskItem = schema.nodes.task_item.create(
+          { checked: false },
+          schema.nodes.paragraph.create()
+        );
+
+        // 替换当前块
+        const tr = state.tr.replaceWith(range.start, range.end, taskItem);
         dispatch(tr);
       }
       return true;
@@ -107,9 +170,16 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.blockquote);
+        // 创建引用块内容
+        const paragraph = schema.nodes.paragraph.create();
+
+        // 创建引用块
+        const blockquote = schema.nodes.blockquote.create(null, paragraph);
+
+        // 替换当前块
+        const tr = state.tr.replaceWith(range.start, range.end, blockquote);
         dispatch(tr);
       }
       return true;
@@ -124,9 +194,13 @@ const slashCommands: SlashCommand[] = [
       const { $from, $to } = state.selection;
       const range = $from.blockRange($to);
       if (!range) return false;
-      
+
       if (dispatch) {
-        const tr = state.tr.setBlockType(range.start, range.end, schema.nodes.code_block);
+        const tr = state.tr.setBlockType(
+          range.start,
+          range.end,
+          schema.nodes.code_block
+        );
         dispatch(tr);
       }
       return true;
@@ -140,7 +214,11 @@ const slashCommands: SlashCommand[] = [
     execute: (state, dispatch) => {
       if (dispatch) {
         const { $from } = state.selection;
-        const tr = state.tr.replaceWith($from.pos, $from.pos, schema.nodes.horizontal_rule.create());
+        const tr = state.tr.replaceWith(
+          $from.pos,
+          $from.pos,
+          schema.nodes.horizontal_rule.create()
+        );
         dispatch(tr);
       }
       return true;
@@ -163,8 +241,8 @@ function createSlashMenu(view: EditorView, commands: SlashCommand[]) {
     overflow-y: auto;
     display: none;
   `;
-  
-  commands.forEach(command => {
+
+  commands.forEach((command) => {
     const item = document.createElement('div');
     item.className = 'prosemirror-slash-menu-item';
     item.style.cssText = `
@@ -174,7 +252,7 @@ function createSlashMenu(view: EditorView, commands: SlashCommand[]) {
       align-items: center;
     `;
     item.dataset.id = command.id;
-    
+
     const icon = document.createElement('span');
     icon.className = 'prosemirror-slash-menu-item-icon';
     icon.style.cssText = `
@@ -187,26 +265,26 @@ function createSlashMenu(view: EditorView, commands: SlashCommand[]) {
       font-weight: bold;
     `;
     icon.textContent = command.icon || '';
-    
+
     const content = document.createElement('div');
     content.style.cssText = `flex: 1;`;
-    
+
     const title = document.createElement('div');
     title.className = 'prosemirror-slash-menu-item-title';
     title.style.cssText = `font-weight: 500;`;
     title.textContent = command.title;
-    
+
     const description = document.createElement('div');
     description.className = 'prosemirror-slash-menu-item-description';
     description.style.cssText = `font-size: 12px; color: #666;`;
     description.textContent = command.description;
-    
+
     content.appendChild(title);
     content.appendChild(description);
-    
+
     item.appendChild(icon);
     item.appendChild(content);
-    
+
     item.addEventListener('click', () => {
       const { state, dispatch } = view;
       // 删除斜杠命令文本
@@ -216,26 +294,26 @@ function createSlashMenu(view: EditorView, commands: SlashCommand[]) {
         const tr = state.tr.delete(start, $cursor.pos);
         dispatch(tr);
       }
-      
+
       // 执行命令
       command.execute(view.state, view.dispatch, view);
-      
+
       // 隐藏菜单
       menu.style.display = 'none';
       view.focus();
     });
-    
+
     item.addEventListener('mouseenter', () => {
       item.style.backgroundColor = '#f0f0f0';
     });
-    
+
     item.addEventListener('mouseleave', () => {
       item.style.backgroundColor = 'transparent';
     });
-    
+
     menu.appendChild(item);
   });
-  
+
   document.body.appendChild(menu);
   return menu;
 }
@@ -243,51 +321,53 @@ function createSlashMenu(view: EditorView, commands: SlashCommand[]) {
 // 创建斜杠命令插件
 export const slashCommandsPlugin = new Plugin({
   key: new PluginKey('slashCommands'),
-  
+
   view(editorView) {
     const menu = createSlashMenu(editorView, slashCommands);
-    
+
     return {
-      update(view, prevState) {
+      update(view, _prevState) {
         const { state } = view;
         const { selection } = state;
         const { $cursor } = selection as any;
-        
+
         // 检查是否有光标，并且前面的文本是否以/开头
         if ($cursor && $cursor.nodeBefore && $cursor.nodeBefore.isText) {
           const text = $cursor.nodeBefore.text || '';
           const lastWord = text.split(/\s/).pop() || '';
-          
+
           if (lastWord.startsWith('/')) {
             const query = lastWord.slice(1).toLowerCase();
-            const filteredCommands = slashCommands.filter(cmd => 
-              cmd.title.toLowerCase().includes(query) || 
-              cmd.description.toLowerCase().includes(query)
+            const filteredCommands = slashCommands.filter(
+              (cmd) =>
+                cmd.title.toLowerCase().includes(query) ||
+                cmd.description.toLowerCase().includes(query)
             );
-            
+
             if (filteredCommands.length > 0) {
               // 显示菜单
               const coords = view.coordsAtPos($cursor.pos);
               menu.style.display = 'block';
               menu.style.top = `${coords.bottom}px`;
               menu.style.left = `${coords.left}px`;
-              
+
               // 更新菜单项
-              Array.from(menu.children).forEach((item: HTMLElement) => {
+              Array.from(menu.children).forEach((element) => {
+                const item = element as HTMLElement;
                 const id = item.dataset.id;
-                const visible = filteredCommands.some(cmd => cmd.id === id);
+                const visible = filteredCommands.some((cmd) => cmd.id === id);
                 item.style.display = visible ? 'flex' : 'none';
               });
-              
+
               return;
             }
           }
         }
-        
+
         // 隐藏菜单
         menu.style.display = 'none';
       },
-      
+
       destroy() {
         menu.remove();
       }

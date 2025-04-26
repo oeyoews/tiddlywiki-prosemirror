@@ -1,6 +1,21 @@
 import { keymap } from 'prosemirror-keymap';
-import { wrapIn, setBlockType, chainCommands, toggleMark, exitCode, joinUp, joinDown, lift, selectParentNode } from 'prosemirror-commands';
-import { wrapInList, splitListItem, liftListItem, sinkListItem } from 'prosemirror-schema-list';
+import {
+  wrapIn,
+  setBlockType,
+  chainCommands,
+  toggleMark,
+  exitCode,
+  joinUp,
+  joinDown,
+  lift,
+  selectParentNode
+} from 'prosemirror-commands';
+import {
+  wrapInList,
+  splitListItem,
+  liftListItem,
+  sinkListItem
+} from 'prosemirror-schema-list';
 import { undo, redo } from 'prosemirror-history';
 import schema from './schema';
 
@@ -18,19 +33,19 @@ const basicKeymap = {
   'Mod-k': (state, dispatch) => {
     // 创建链接
     if (!schema.marks.link) return false;
-    
+
     const { from, to } = state.selection;
     const attrs = { href: '' };
-    
+
     // 如果已经有链接，则不做任何操作
     if (state.doc.rangeHasMark(from, to, schema.marks.link)) {
       return false;
     }
-    
+
     if (dispatch) {
       dispatch(state.tr.addMark(from, to, schema.marks.link.create(attrs)));
     }
-    
+
     return true;
   },
 
@@ -48,15 +63,36 @@ const basicKeymap = {
   // 列表操作
   'Shift-Ctrl-8': wrapInList(schema.nodes.bullet_list),
   'Shift-Ctrl-9': wrapInList(schema.nodes.ordered_list),
-  'Enter': splitListItem(schema.nodes.list_item),
+  'Shift-Ctrl-t': (state, dispatch) => {
+    // 创建任务列表项
+    if (!schema.nodes.task_item) return false;
+
+    const { $from, $to } = state.selection;
+    const range = $from.blockRange($to);
+    if (!range) return false;
+
+    if (dispatch) {
+      // 创建任务列表项
+      const taskItem = schema.nodes.task_item.create(
+        { checked: false },
+        schema.nodes.paragraph.create()
+      );
+
+      // 替换当前块
+      const tr = state.tr.replaceWith(range.start, range.end, taskItem);
+      dispatch(tr);
+    }
+    return true;
+  },
+  Enter: splitListItem(schema.nodes.list_item),
   'Mod-[': liftListItem(schema.nodes.list_item),
   'Mod-]': sinkListItem(schema.nodes.list_item),
 
   // 其他操作
-  'Backspace': chainCommands(joinUp, lift),
+  Backspace: chainCommands(joinUp, lift),
   'Alt-ArrowUp': joinUp,
   'Alt-ArrowDown': joinDown,
-  'Escape': selectParentNode,
+  Escape: selectParentNode,
   'Ctrl-Enter': exitCode
 };
 

@@ -12,6 +12,7 @@ import { textToDoc, docToText } from './markdown';
 import { markdownInputRules } from './input-rules';
 import { slashCommandsPlugin } from './slash-commands';
 import { editorKeymap } from './keyboard';
+import { taskListPlugin } from './task-list';
 
 interface IOptions {
   widget: IWidget;
@@ -62,6 +63,9 @@ class ProseMirrorEngine {
     if (config.slashCommandsEnabled()) {
       plugins.push(slashCommandsPlugin);
     }
+
+    // 添加任务列表支持
+    plugins.push(taskListPlugin);
 
     // 根据配置添加插件
     if (config.historyEnabled()) {

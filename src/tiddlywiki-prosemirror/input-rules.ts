@@ -130,7 +130,7 @@ const taskListRule = new InputRule(
   /^\s*\[([ xX])\]\s$/,
   (state, match, start, end) => {
     // 检查schema是否支持任务列表节点
-    if (!schema.nodes.task_list_item) return null;
+    if (!schema.nodes.task_item) return null;
 
     const checked = match[1] !== ' ';
     const { tr } = state;
@@ -139,7 +139,7 @@ const taskListRule = new InputRule(
     tr.delete(start, end);
 
     // 创建任务列表项
-    const taskItem = schema.nodes.task_list_item.create(
+    const taskItem = schema.nodes.task_item.create(
       { checked },
       schema.nodes.paragraph.create()
     );

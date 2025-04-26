@@ -50,6 +50,7 @@ type: text/vnd.tiddlywiki
 * `/h3` - 插入三级标题
 * `/bullet` - 插入无序列表
 * `/number` - 插入有序列表
+* `/taskList` - 插入任务列表
 * `/quote` - 插入引用块
 * `/code` - 插入代码块
 * `/hr` - 插入水平分隔线
@@ -68,6 +69,7 @@ type: text/vnd.tiddlywiki
 * `Shift+Ctrl+]` - 引用块
 * `Shift+Ctrl+8` - 无序列表
 * `Shift+Ctrl+9` - 有序列表
+* `Shift+Ctrl+T` - 任务列表
 * `Ctrl+Z` - 撤销
 * `Ctrl+Y` 或 `Shift+Ctrl+Z` - 重做
 
