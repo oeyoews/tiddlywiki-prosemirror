@@ -1,0 +1,27 @@
+title: $:/plugins/oeyoews/tiddlywiki-prosemirror/settings
+type: text/vnd.tiddlywiki
+caption: ProseMirror
+
+\define lingo-base() $:/language/ControlPanel/
+
+! ProseMirror 编辑器设置
+
+这些设置控制ProseMirror编辑器的行为。
+
+|<<lingo Settings/Heading>>|
+|自动保存 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/autoSave" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|启用历史记录 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/historyEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|启用拖放光标 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/dropCursorEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|启用间隙光标 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/gapCursorEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |

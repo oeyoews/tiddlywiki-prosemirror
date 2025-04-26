@@ -1,0 +1,14 @@
+title: $:/config/EditorTypeMappings/
+
+application/javascript: prosemirror
+application/json: prosemirror
+application/x-tiddler-dictionary: prosemirror
+text/css: prosemirror
+text/html: prosemirror
+text/plain: prosemirror
+text/vnd.tiddlywiki: prosemirror
+text/x-tiddlywiki: prosemirror
+text/markdown: prosemirror
+text/x-markdown: prosemirror
+text/vnd.tiddlywiki.mermaid: prosemirror
+image/svg+xml: prosemirror

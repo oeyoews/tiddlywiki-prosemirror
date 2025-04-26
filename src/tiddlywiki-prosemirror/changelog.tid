@@ -1,0 +1,10 @@
+title: $:/plugins/oeyoews/tiddlywiki-prosemirror/changelog
+type: text/vnd.tiddlywiki
+
+! 更新日志
+
+!! 1.0.0
+* 初始版本
+* 基本的ProseMirror编辑器功能
+* 支持基本文本格式化
+* 支持列表和其他结构化内容

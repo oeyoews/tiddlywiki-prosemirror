@@ -1,0 +1,25 @@
+title: $:/plugins/oeyoews/tiddlywiki-prosemirror/readme
+type: text/vnd.tiddlywiki
+
+! TiddlyWiki ProseMirror 编辑器
+
+这个插件为TiddlyWiki提供了一个基于ProseMirror的富文本编辑器。
+
+!! 特性
+
+* 基于ProseMirror的现代化富文本编辑
+* 支持基本的文本格式化
+* 支持列表和其他结构化内容
+* 可配置的编辑器行为
+
+!! 配置
+
+可以在控制面板中找到ProseMirror编辑器的配置选项。
+
+!! 使用方法
+
+安装此插件后，它将自动替代默认的编辑器。
+
+!! 兼容性
+
+此插件需要TiddlyWiki 5.3.4或更高版本。
