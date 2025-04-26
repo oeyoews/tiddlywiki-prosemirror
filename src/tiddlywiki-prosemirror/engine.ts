@@ -226,10 +226,8 @@ class ProseMirrorEngine {
       plugins.push(editorKeymap);
     }
 
-    // 添加Markdown输入规则
-    if (config.markdownEnabled()) {
-      plugins.push(markdownInputRules);
-    }
+    // 添加Markdown输入规则 - 始终启用以确保 ## 等语法正常工作
+    plugins.push(markdownInputRules);
 
     // 添加斜杠命令支持
     if (config.slashCommandsEnabled()) {

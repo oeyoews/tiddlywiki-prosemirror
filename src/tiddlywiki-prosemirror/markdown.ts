@@ -8,10 +8,19 @@ import {
 // 将文本转换为ProseMirror文档
 export function textToDoc(text: string) {
   // 检测文本是否是Markdown格式
-  if (
-    (isMarkdown(text) || config.forceMarkdown()) &&
-    config.markdownEnabled()
-  ) {
+  const shouldUseMarkdown =
+    (isMarkdown(text) || config.forceMarkdown()) && config.markdownEnabled();
+
+  // 记录当前处理模式
+  console.log('文本处理模式:', shouldUseMarkdown ? 'Markdown' : '普通文本');
+  console.log(
+    'Markdown启用状态:',
+    config.markdownEnabled() ? '已启用' : '已禁用'
+  );
+  console.log('强制Markdown:', config.forceMarkdown() ? '是' : '否');
+  console.log('文本是否为Markdown格式:', isMarkdown(text) ? '是' : '否');
+
+  if (shouldUseMarkdown) {
     try {
       // 使用prosemirror-markdown的解析器
       return defaultMarkdownParser.parse(text);
@@ -89,6 +98,11 @@ function isMarkdown(text: string): boolean {
     return false;
   }
 
+  // 如果文本为空，返回false
+  if (!text || text.trim() === '') {
+    return false;
+  }
+
   // Markdown语法检测
   const markdownPatterns = [
     /^#+ .*$/m, // 标题
@@ -105,7 +119,22 @@ function isMarkdown(text: string): boolean {
     /^===$$/m // 分隔线
   ];
 
-  return markdownPatterns.some((pattern) => pattern.test(text));
+  // 检查文本是否包含Markdown语法
+  const containsMarkdown = markdownPatterns.some((pattern) =>
+    pattern.test(text)
+  );
+
+  // 如果文本很短（例如，只有几个字符），并且用户正在输入类似 "## " 的内容，
+  // 我们应该将其视为Markdown，即使它还不完全符合Markdown语法
+  const isTypingMarkdown =
+    text.length < 10 &&
+    (/^#+\s*$/.test(text) || // 正在输入标题
+      /^-\s*$/.test(text) || // 正在输入无序列表
+      /^[0-9]+\.\s*$/.test(text) || // 正在输入有序列表
+      /^>\s*$/.test(text) || // 正在输入引用
+      /^```\s*$/.test(text)); // 正在输入代码块
+
+  return containsMarkdown || isTypingMarkdown;
 }
 
 // 检查文档是否适合转换为Markdown

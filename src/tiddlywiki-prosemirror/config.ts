@@ -41,7 +41,10 @@ export default {
 
   // 是否强制使用Markdown
   forceMarkdown() {
-    return this.getConfig('forceMarkdown', 'no') === 'yes';
+    // 默认返回 true，确保始终使用 Markdown 解析器
+    return true;
+    // 如果需要恢复配置控制，取消注释下面的行
+    // return this.getConfig('forceMarkdown', 'yes') === 'yes';
   },
 
   // 是否启用斜杠命令
