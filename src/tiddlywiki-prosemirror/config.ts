@@ -84,7 +84,7 @@ export default {
 
   // 是否启用工具栏
   toolbarEnabled() {
-    return this.getConfig('toolbarEnabled', 'yes') === 'yes';
+    return this.getConfig('toolbarEnabled', 'no') === 'yes';
   },
 
   // 获取工具栏位置

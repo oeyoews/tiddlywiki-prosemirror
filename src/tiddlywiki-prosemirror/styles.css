@@ -3,27 +3,75 @@
 /* 任务列表样式 */
 li.task-list-item {
   position: relative;
-  margin: 0.1em 0;
+  margin: 0.2em 0;
   list-style-type: none;
-  padding-left: 1.5em;
+  padding-left: 1.8em;
 }
 
 .task-list-item-checkbox {
   position: absolute;
   left: 0;
-  width: 1.5em;
-  height: 1.5em;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0.25em 0 0 0;
   cursor: pointer;
   user-select: none;
+  width: 16px;
+  height: 16px;
+  /* 美化复选框样式 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  background-color: white;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* 复选框选中状态样式 */
+.task-list-item-checkbox:checked {
+  background-color: #4c8bf5;
+  border-color: #4c8bf5;
+}
+
+/* 复选框选中状态的勾选标记 */
+.task-list-item-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* 鼠标悬停样式 */
+.task-list-item-checkbox:hover {
+  border-color: #888;
+}
+
+/* 兼容性处理 - 针对不支持自定义复选框的浏览器 */
+@supports not (-webkit-appearance: none) {
+  .task-list-item-checkbox {
+    position: absolute;
+    left: 0;
+    top: 0.25em;
+    margin: 0;
+    transform: scale(1.2);
+    transform-origin: left center;
+  }
+
+  .task-list-item-checkbox:checked::after {
+    content: none;
+  }
 }
 
 /* 已完成任务的样式 */
 li.task-list-item[data-checked="true"]>div>p {
   text-decoration: line-through;
-  color: #666;
+  color: #888;
+  opacity: 0.8;
 }
 
 /* 表格样式 */

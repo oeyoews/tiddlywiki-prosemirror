@@ -26,12 +26,13 @@ const customNodes = nodes.addToEnd('task_item', {
         'data-checked': node.attrs.checked.toString()
       },
       [
-        'span',
+        'input',
         {
+          type: 'checkbox',
           class: 'task-list-item-checkbox',
+          checked: node.attrs.checked ? 'checked' : undefined,
           contenteditable: 'false'
-        },
-        node.attrs.checked ? '☑' : '☐'
+        }
       ],
       ['div', 0]
     ];

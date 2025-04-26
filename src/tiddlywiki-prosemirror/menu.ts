@@ -253,10 +253,14 @@ function buildListMenu() {
           const range = $from.blockRange($from);
           if (!range) return false;
 
-          // 将当前块替换为任务列表项
-          tr.setBlockType(range.start, range.end, taskItemType, {
-            checked: false
-          });
+          // 获取当前段落内容
+          const content = range.parent.content;
+
+          // 创建任务列表项节点
+          const taskItem = taskItemType.create({ checked: false }, content);
+
+          // 替换当前段落为任务列表项
+          tr.replaceWith(range.start, range.end, taskItem);
           dispatch(tr);
         }
         return true;

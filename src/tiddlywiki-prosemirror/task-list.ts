@@ -38,7 +38,8 @@ export const taskListPlugin = new Plugin({
           view.dispatch(tr);
 
           // 更新DOM
-          target.textContent = !checked ? '☑' : '☐';
+          const checkbox = target as HTMLInputElement;
+          checkbox.checked = !checked;
           listItem.setAttribute('data-checked', (!checked).toString());
 
           // 阻止事件传播
