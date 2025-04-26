@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const jsonInfo = require('../package.json');
-const langtwInfo = require('../packages/lang-tiddlywiki/package.json');
 
 // 版本类型，可以是 'major'，'minor' 或 'patch'
 const versionType = process.argv[2] || 'patch'; // 从命令行参数中获取版本类型，默认为 'patch'
@@ -9,7 +8,7 @@ const versionType = process.argv[2] || 'patch'; // 从命令行参数中获取�
 const infoFilePath = path.join(
   __dirname,
   '..',
-  'src/tiddlywiki-prosemirror-6/plugin.info'
+  'src/tiddlywiki-prosemirror/plugin.info'
 );
 
 // 读取文件内容
@@ -38,7 +37,6 @@ if (versionType === 'major') {
 // 更新对象中的版本号
 info.version = currentVersion.join('.');
 jsonInfo.version = info.version;
-langtwInfo.version = info.version;
 
 // 将更新后的对象转换回 JSON 字符串
 const updatedInfoFileContent = JSON.stringify(info, null, 2);
@@ -46,10 +44,5 @@ const updatedInfoFileContent = JSON.stringify(info, null, 2);
 // 将更新后的内容写回文件
 fs.writeFileSync(infoFilePath, updatedInfoFileContent, 'utf8');
 fs.writeFileSync('./package.json', JSON.stringify(jsonInfo, null, 2), 'utf8');
-fs.writeFileSync(
-  './packages/lang-tiddlywiki/package.json',
-  JSON.stringify(langtwInfo, null, 2),
-  'utf8'
-);
 
 console.log('版本号已更新！', info.version);

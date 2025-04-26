@@ -1,13 +1,10 @@
 {
   "url": "https://github.com/oeyoews/tiddlywiki-prosemirror",
-  "workspaces": [
-    "packages/*"
-  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
   "license": "MIT",
-  "version": "3.9.0",
+  "version": "1.0.1",
   "packageManager": "pnpm@9.0.6",
   "scripts": {
     "bump": "node scripts/bump.js",
