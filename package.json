@@ -10,11 +10,10 @@
   "version": "3.9.0",
   "packageManager": "pnpm@9.0.6",
   "scripts": {
-    "update:config": " pnpm ts-node scripts/generateConfig.ts",
     "bump": "node scripts/bump.js",
     "dev": "tiddlywiki-plugin-dev dev",
-    "build": "pnpm update:config && pnpm run clean && tiddlywiki-plugin-dev build",
-    "publish": "pnpm update:config && pnpm run clean && tiddlywiki-plugin-dev publish",
+    "build": "pnpm run clean && tiddlywiki-plugin-dev build",
+    "publish": "pnpm run clean && tiddlywiki-plugin-dev publish",
     "clean": "rimraf dist",
     "format": "prettier . --write",
     "minify": "node scripts/minify.js",
