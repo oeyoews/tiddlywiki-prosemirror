@@ -1,3 +1,40 @@
+<!--
+This README provides an overview of the `tiddlywiki-codemirror-6` plugin, which has entered maintenance mode as of 2024-01-24. The plugin focuses on bug fixes and compatibility improvements, with no major changes planned. A minimal version of the plugin is available in the `basic` branch.
+
+### Key Features
+- **Emoji Completion**: Provides emoji suggestions for enhanced text editing.
+- **Wiki Mode**: Enables a specialized mode for editing TiddlyWiki content.
+- **Code Snippet Completion**: Offers auto-completion for code snippets.
+- **Tiddler Completion**: Facilitates linking and referencing TiddlyWiki tiddlers.
+- **Widget Completion**: Assists in inserting and editing widgets.
+- **Image Completion**: Simplifies adding and managing images.
+- **Color Customization**: Allows users to modify colors dynamically.
+- **Link Preview**: Displays previews for links within the editor.
+
+### File Structure
+The project is organized into multiple directories, including:
+- `config`: Configuration files for the plugin.
+- `modules`: Contains completions, constants, extensions, and keymaps.
+- `tiddlers`: Includes auto-generated configurations, icons, macros, palettes, shortcuts, and UI components.
+- `types`: Type definitions for the plugin.
+- `utils`: Utility functions and helpers.
+
+### Development
+To contribute or debug the plugin locally:
+1. Clone the repository with `git clone --depth 1`.
+2. Install dependencies using `pnpm install`.
+3. Use `pnpm dev` for local debugging or `pnpm build` to build the plugin.
+
+### Demos
+- **StackBlitz Demo**: A live demo showcasing the plugin's features.
+- **Vercel Demo**: Hosted demo for testing the plugin.
+- **GitHub Pages Demo**: Another hosted demo for plugin exploration.
+
+### Badges
+Dynamic JSON badges are included to display the current version of the plugin.
+
+For more details, refer to the repository's documentation and explore the provided demos.
+-->
 <!-- > [!IMPORTANT]
 > tiddlywiki-codemirror-6 插件进入维护状态，接下来主要修复 BUG, 提升插件的兼容性，整体上不会再进行大的改动 (2024-01-24). 如果你想要查看最小版本的 tiddlywiki-codemirror-6 插件，请查看 `basic` 分支。 -->
 

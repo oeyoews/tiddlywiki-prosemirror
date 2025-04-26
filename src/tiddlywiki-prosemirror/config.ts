@@ -27,5 +27,20 @@ export default {
   // 是否启用间隙光标
   gapCursorEnabled() {
     return this.getConfig('gapCursorEnabled', 'yes') === 'yes';
+  },
+
+  // 是否启用Markdown支持
+  markdownEnabled() {
+    return this.getConfig('markdownEnabled', 'yes') === 'yes';
+  },
+
+  // 是否自动检测Markdown
+  autoDetectMarkdown() {
+    return this.getConfig('autoDetectMarkdown', 'yes') === 'yes';
+  },
+
+  // 是否强制使用Markdown
+  forceMarkdown() {
+    return this.getConfig('forceMarkdown', 'no') === 'yes';
   }
 };

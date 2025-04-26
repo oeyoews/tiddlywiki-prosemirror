@@ -1,22 +1,15 @@
-import { Schema } from 'prosemirror-model';
-import config from './config';
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { schema as basicSchema } from 'prosemirror-schema-basic';
-import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { inputRules } from 'prosemirror-inputrules';
 import { IWidget, TW_Element } from './types';
-
-// 扩展基本schema，添加列表节点
-const schema = new Schema({
-  nodes: addListNodes(basicSchema.spec.nodes, 'paragraph block*', 'block'),
-  marks: basicSchema.spec.marks
-});
+import config from './config';
+import schema from './schema';
+import { textToDoc, docToText } from './markdown';
+import { markdownInputRules } from './input-rules';
 
 interface IOptions {
   widget: IWidget;
@@ -51,7 +44,12 @@ class ProseMirrorEngine {
     this.domNode.style.display = 'inline-block';
 
     // 初始化ProseMirror状态
-    const plugins = [keymap(baseKeymap), inputRules({ rules: [] })];
+    const plugins = [keymap(baseKeymap)];
+
+    // 添加Markdown输入规则
+    if (config.markdownEnabled()) {
+      plugins.push(markdownInputRules);
+    }
 
     // 根据配置添加插件
     if (config.historyEnabled()) {
@@ -68,19 +66,13 @@ class ProseMirrorEngine {
 
     this.state = EditorState.create({
       schema,
-      doc: schema.nodeFromJSON(
-        options.value
-          ? {
-              type: 'doc',
-              content: [
-                {
-                  type: 'paragraph',
-                  content: [{ type: 'text', text: options.value }]
-                }
-              ]
-            }
-          : { type: 'doc', content: [{ type: 'paragraph' }] }
-      ),
+      // 使用markdown模块处理初始文本
+      doc: options.value
+        ? textToDoc(options.value)
+        : schema.nodeFromJSON({
+            type: 'doc',
+            content: [{ type: 'paragraph' }]
+          }),
       plugins: plugins
     });
 
@@ -182,12 +174,8 @@ class ProseMirrorEngine {
   updateDomNodeText(text: string) {
     try {
       const transaction = this.editor.state.tr;
-      const doc = schema.nodeFromJSON({
-        type: 'doc',
-        content: [
-          { type: 'paragraph', content: [{ type: 'text', text: text }] }
-        ]
-      });
+      // 使用markdown模块处理文本
+      const doc = textToDoc(text);
       transaction.replaceWith(0, this.editor.state.doc.content.size, doc);
       this.editor.dispatch(transaction);
     } catch (e) {
@@ -197,21 +185,8 @@ class ProseMirrorEngine {
 
   /** @description Get the text of the engine */
   getText() {
-    let text = '';
-    this.editor.state.doc.descendants((node) => {
-      if (node.isText) {
-        text += node.text;
-      }
-      if (
-        node.type.name === 'paragraph' &&
-        text.length > 0 &&
-        !text.endsWith('\n')
-      ) {
-        text += '\n';
-      }
-      return true;
-    });
-    return text;
+    // 使用markdown模块处理文档
+    return docToText(this.editor.state.doc);
   }
 
   /** @description Fix the height of textarea to fit content */

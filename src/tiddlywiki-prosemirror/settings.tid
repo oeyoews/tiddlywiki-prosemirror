@@ -8,6 +8,8 @@ caption: ProseMirror
 
 这些设置控制ProseMirror编辑器的行为。
 
+!! 基本设置
+
 |<<lingo Settings/Heading>>|
 |自动保存 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/autoSave" default="yes">
 <option value="yes">是</option>
@@ -22,6 +24,22 @@ caption: ProseMirror
 <option value="no">否</option>
 </$select> |
 |启用间隙光标 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/gapCursorEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+
+!! Markdown 设置
+
+|<<lingo Settings/Heading>>|
+|启用Markdown支持 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/markdownEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|自动检测Markdown |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/autoDetectMarkdown" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|强制使用Markdown |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/forceMarkdown" default="no">
 <option value="yes">是</option>
 <option value="no">否</option>
 </$select> |
