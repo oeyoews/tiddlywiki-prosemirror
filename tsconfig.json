@@ -6,6 +6,7 @@
     "typeRoots": ["node_modules/@types", "node_modules/tw5-typed"],
     "newLine": "lf",
     "lib": ["DOM", "ESNext"],
+    "noImplicitAny": false,
     "paths": {
       // "@/*": [
       //   "./src/*"

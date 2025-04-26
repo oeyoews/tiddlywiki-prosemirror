@@ -8,7 +8,8 @@ import {
   joinUp,
   joinDown,
   lift,
-  selectParentNode
+  selectParentNode,
+  createParagraphNear
 } from 'prosemirror-commands';
 import {
   wrapInList,
@@ -20,7 +21,7 @@ import { undo, redo } from 'prosemirror-history';
 import schema from './schema';
 
 // 创建基本的编辑快捷键
-const basicKeymap = {
+const basicKeymap: { [key: string]: any } = {
   // 历史操作
   'Mod-z': undo,
   'Shift-Mod-z': redo,
@@ -84,6 +85,7 @@ const basicKeymap = {
     }
     return true;
   },
+  // 列表操作
   Enter: splitListItem(schema.nodes.list_item),
   'Mod-[': liftListItem(schema.nodes.list_item),
   'Mod-]': sinkListItem(schema.nodes.list_item),
@@ -96,7 +98,7 @@ const basicKeymap = {
   'Ctrl-Enter': exitCode,
 
   // 从代码块跳出
-  Tab: (state, dispatch, view) => {
+  Tab: (state, dispatch, _view) => {
     // 检查当前是否在代码块中
     const { $from } = state.selection;
     const node = $from.node();
@@ -112,7 +114,6 @@ const basicKeymap = {
       const paragraph = schema.nodes.paragraph.create();
 
       // 获取代码块的位置
-      let pos = $from.pos;
       let depth = $from.depth;
 
       // 找到代码块的结束位置
@@ -140,7 +141,7 @@ const basicKeymap = {
   },
 
   // 另一种跳出方式：Shift+Enter
-  'Shift-Enter': (state, dispatch, view) => {
+  'Shift-Enter': (state, dispatch, _view) => {
     // 检查当前是否在代码块中
     const { $from } = state.selection;
     const node = $from.node();
@@ -156,7 +157,6 @@ const basicKeymap = {
       const paragraph = schema.nodes.paragraph.create();
 
       // 获取代码块的位置
-      let pos = $from.pos;
       let depth = $from.depth;
 
       // 找到代码块的结束位置

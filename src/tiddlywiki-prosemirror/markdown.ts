@@ -1,11 +1,9 @@
 import schema from './schema';
 import config from './config';
-// 注意：需要确保已安装prosemirror-markdown包
-// 使用require方式导入，以适应TiddlyWiki的模块系统
-const {
+import {
   defaultMarkdownParser,
   defaultMarkdownSerializer
-} = require('prosemirror-markdown');
+} from 'prosemirror-markdown';
 
 // 将文本转换为ProseMirror文档
 export function textToDoc(text: string) {
@@ -66,7 +64,7 @@ export function docToText(doc: any) {
 }
 
 // 提取纯文本
-function extractPlainText(doc: any): string {
+export function extractPlainText(doc: any): string {
   let text = '';
   doc.descendants((node: any) => {
     if (node.isText) {

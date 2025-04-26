@@ -8,7 +8,7 @@ import { gapCursor } from 'prosemirror-gapcursor';
 import { IWidget, TW_Element } from './types';
 import config from './config';
 import schema from './schema';
-import { textToDoc, docToText } from './markdown';
+import { textToDoc, docToText, extractPlainText } from './markdown';
 import { markdownInputRules } from './input-rules';
 import { slashCommandsPlugin } from './slash-commands';
 import { editorKeymap } from './keyboard';
@@ -53,6 +53,41 @@ class ProseMirrorEngine {
       this.domNode.className += ' ' + this.widget.editClass;
     }
     this.domNode.style.display = 'block'; // 改为块级显示，占据整行
+
+    // 添加控制台输出和导出方法
+    if (typeof window !== 'undefined') {
+      // 获取内容方法
+      (window as any).getProseMirrorContent = () => {
+        console.log('Markdown 内容:', this.getText());
+        console.log('纯文本内容:', this.getPlainText());
+        return {
+          markdown: this.getText()
+          // plainText: this.getPlainText()
+        };
+      };
+
+      // 导出内容方法
+      (window as any).exportProseMirrorContent = async (
+        format: 'markdown' | 'plaintext' = 'markdown'
+      ) => {
+        return await this.exportContent(format);
+      };
+
+      // 保存内容到文件方法
+      (window as any).saveProseMirrorContent = (
+        format: 'markdown' | 'plaintext' = 'markdown',
+        filename?: string
+      ) => {
+        return this.saveContentToFile(format, filename);
+      };
+
+      console.log('ProseMirror 编辑器已初始化。可以使用以下方法：');
+      console.log('- getProseMirrorContent(): 获取编辑器内容');
+      console.log('- exportProseMirrorContent(format): 导出并复制编辑器内容');
+      console.log(
+        '- saveProseMirrorContent(format, filename): 保存编辑器内容到文件'
+      );
+    }
 
     // 初始化ProseMirror状态
     const plugins = [keymap(baseKeymap)];
@@ -168,7 +203,7 @@ class ProseMirrorEngine {
     const keyboardWidgets = [];
     while (widget) {
       if (widget.parseTreeNode.type === 'keyboard') {
-        keyboardWidgets.push(widget);
+        (keyboardWidgets as IWidget[]).push(widget);
       }
       widget = widget.parentWidget as IWidget;
     }
@@ -227,6 +262,81 @@ class ProseMirrorEngine {
   getText() {
     // 使用markdown模块处理文档
     return docToText(this.editor.state.doc);
+  }
+
+  /** @description Get the plain text content of the editor */
+  getPlainText() {
+    // 提取纯文本内容
+    return extractPlainText(this.editor.state.doc);
+  }
+
+  /** @description Export the editor content in different formats */
+  async exportContent(format: 'markdown' | 'plaintext' = 'markdown') {
+    const content =
+      format === 'markdown' ? this.getText() : this.getPlainText();
+
+    // 使用现代的Clipboard API复制到剪贴板
+    try {
+      await navigator.clipboard.writeText(content);
+      console.log('内容已复制到剪贴板');
+    } catch (err) {
+      console.error('无法复制到剪贴板:', err);
+
+      // 回退到旧方法
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = content;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        // 使用废弃的API作为后备方案
+        const success = document.execCommand('copy');
+        if (success) {
+          console.log('使用旧方法复制成功');
+        } else {
+          console.warn('复制失败');
+        }
+
+        document.body.removeChild(textarea);
+      } catch (e) {
+        console.error('复制失败:', e);
+      }
+    }
+
+    // 返回内容
+    return content;
+  }
+
+  /** @description Save the editor content to a file */
+  saveContentToFile(
+    format: 'markdown' | 'plaintext' = 'markdown',
+    filename?: string
+  ) {
+    const content =
+      format === 'markdown' ? this.getText() : this.getPlainText();
+    const defaultFilename =
+      format === 'markdown' ? 'content.md' : 'content.txt';
+    const file = filename || defaultFilename;
+
+    // 创建一个Blob对象
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+
+    // 创建一个下载链接
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = file;
+
+    // 触发点击事件下载文件
+    document.body.appendChild(a);
+    a.click();
+
+    // 清理
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+
+    return content;
   }
 
   /** @description Fix the height of textarea to fit content */
