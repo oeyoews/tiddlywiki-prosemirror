@@ -261,6 +261,8 @@ li.task-list-item[data-checked="true"]>div>p {
   z-index: 10;
   max-height: 300px;
   overflow-y: auto;
+  min-width: 220px;
+  max-width: 320px;
 }
 
 .prosemirror-slash-menu-item {
@@ -268,6 +270,12 @@ li.task-list-item[data-checked="true"]>div>p {
   cursor: pointer;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.prosemirror-slash-menu-item:last-child {
+  border-bottom: none;
 }
 
 .prosemirror-slash-menu-item:hover {
@@ -276,19 +284,37 @@ li.task-list-item[data-checked="true"]>div>p {
 
 .prosemirror-slash-menu-item-icon {
   margin-right: 8px;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .prosemirror-slash-menu-item-title {
   font-weight: 500;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .prosemirror-slash-menu-item-description {
   font-size: 12px;
   color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 高亮匹配文本 */
+.prosemirror-slash-menu-item strong {
+  color: #0366d6;
+  font-weight: bold;
+  background-color: rgba(3, 102, 214, 0.1);
+  border-radius: 2px;
 }

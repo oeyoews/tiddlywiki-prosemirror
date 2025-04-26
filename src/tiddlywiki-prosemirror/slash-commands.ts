@@ -273,11 +273,13 @@ function createSlashMenu(view: EditorView, commands: SlashCommand[]) {
     title.className = 'prosemirror-slash-menu-item-title';
     title.style.cssText = `font-weight: 500;`;
     title.textContent = command.title;
+    title.dataset.original = command.title; // 存储原始标题文本
 
     const description = document.createElement('div');
     description.className = 'prosemirror-slash-menu-item-description';
     description.style.cssText = `font-size: 12px; color: #666;`;
     description.textContent = command.description;
+    description.dataset.original = command.description; // 存储原始描述文本
 
     content.appendChild(title);
     content.appendChild(description);
@@ -338,11 +340,38 @@ export const slashCommandsPlugin = new Plugin({
 
           if (lastWord.startsWith('/')) {
             const query = lastWord.slice(1).toLowerCase();
-            const filteredCommands = slashCommands.filter(
-              (cmd) =>
-                cmd.title.toLowerCase().includes(query) ||
-                cmd.description.toLowerCase().includes(query)
-            );
+
+            // 改进的过滤逻辑
+            const filteredCommands = slashCommands.filter((cmd) => {
+              // 检查ID是否匹配（优先级最高）
+              if (cmd.id.toLowerCase().includes(query)) return true;
+
+              // 检查标题是否匹配
+              if (cmd.title.toLowerCase().includes(query)) return true;
+
+              // 检查描述是否匹配
+              if (cmd.description.toLowerCase().includes(query)) return true;
+
+              return false;
+            });
+
+            // 对结果进行排序，使最匹配的结果排在前面
+            filteredCommands.sort((a, b) => {
+              // ID匹配的优先级最高
+              const aIdMatch = a.id.toLowerCase().includes(query);
+              const bIdMatch = b.id.toLowerCase().includes(query);
+              if (aIdMatch && !bIdMatch) return -1;
+              if (!aIdMatch && bIdMatch) return 1;
+
+              // 标题匹配的优先级次之
+              const aTitleMatch = a.title.toLowerCase().includes(query);
+              const bTitleMatch = b.title.toLowerCase().includes(query);
+              if (aTitleMatch && !bTitleMatch) return -1;
+              if (!aTitleMatch && bTitleMatch) return 1;
+
+              // 最后按照原始顺序排序
+              return 0;
+            });
 
             if (filteredCommands.length > 0) {
               // 显示菜单
@@ -351,12 +380,69 @@ export const slashCommandsPlugin = new Plugin({
               menu.style.top = `${coords.bottom}px`;
               menu.style.left = `${coords.left}px`;
 
-              // 更新菜单项
+              // 更新菜单项并高亮匹配文本
               Array.from(menu.children).forEach((element) => {
                 const item = element as HTMLElement;
                 const id = item.dataset.id;
+                const command = slashCommands.find((cmd) => cmd.id === id);
                 const visible = filteredCommands.some((cmd) => cmd.id === id);
+
+                // 设置可见性
                 item.style.display = visible ? 'flex' : 'none';
+
+                if (visible && command && query) {
+                  // 高亮匹配的文本
+                  const titleElement = item.querySelector(
+                    '.prosemirror-slash-menu-item-title'
+                  ) as HTMLElement;
+                  const descElement = item.querySelector(
+                    '.prosemirror-slash-menu-item-description'
+                  ) as HTMLElement;
+
+                  if (titleElement && titleElement.dataset.original) {
+                    const originalTitle = titleElement.dataset.original;
+                    const titleLower = originalTitle.toLowerCase();
+                    const queryIndex = titleLower.indexOf(query.toLowerCase());
+
+                    if (queryIndex >= 0) {
+                      // 高亮标题中匹配的部分
+                      const before = originalTitle.substring(0, queryIndex);
+                      const match = originalTitle.substring(
+                        queryIndex,
+                        queryIndex + query.length
+                      );
+                      const after = originalTitle.substring(
+                        queryIndex + query.length
+                      );
+                      titleElement.innerHTML = `${before}<strong style="color: #0366d6;">${match}</strong>${after}`;
+                    } else {
+                      // 恢复原始文本
+                      titleElement.textContent = originalTitle;
+                    }
+                  }
+
+                  if (descElement && descElement.dataset.original) {
+                    const originalDesc = descElement.dataset.original;
+                    const descLower = originalDesc.toLowerCase();
+                    const queryIndex = descLower.indexOf(query.toLowerCase());
+
+                    if (queryIndex >= 0) {
+                      // 高亮描述中匹配的部分
+                      const before = originalDesc.substring(0, queryIndex);
+                      const match = originalDesc.substring(
+                        queryIndex,
+                        queryIndex + query.length
+                      );
+                      const after = originalDesc.substring(
+                        queryIndex + query.length
+                      );
+                      descElement.innerHTML = `${before}<strong style="color: #0366d6;">${match}</strong>${after}`;
+                    } else {
+                      // 恢复原始文本
+                      descElement.textContent = originalDesc;
+                    }
+                  }
+                }
               });
 
               return;
@@ -366,6 +452,25 @@ export const slashCommandsPlugin = new Plugin({
 
         // 隐藏菜单
         menu.style.display = 'none';
+
+        // 恢复所有菜单项的原始文本
+        Array.from(menu.children).forEach((element) => {
+          const item = element as HTMLElement;
+          const titleElement = item.querySelector(
+            '.prosemirror-slash-menu-item-title'
+          ) as HTMLElement;
+          const descElement = item.querySelector(
+            '.prosemirror-slash-menu-item-description'
+          ) as HTMLElement;
+
+          if (titleElement && titleElement.dataset.original) {
+            titleElement.textContent = titleElement.dataset.original;
+          }
+
+          if (descElement && descElement.dataset.original) {
+            descElement.textContent = descElement.dataset.original;
+          }
+        });
       },
 
       destroy() {
