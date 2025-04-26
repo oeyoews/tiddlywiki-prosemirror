@@ -54,13 +54,6 @@ class ProseMirrorEngine {
     this.nextSibling = options.nextSibling;
     this.onChange = options.onChange;
 
-    // 初始化事件监听器映射
-    this.eventListeners.set('change', new Set());
-    this.eventListeners.set('focus', new Set());
-    this.eventListeners.set('blur', new Set());
-    this.eventListeners.set('keydown', new Set());
-    this.eventListeners.set('keyup', new Set());
-
     this.domNode = this.widget.document.createElement('div');
     this.domNode.style.overflow = 'auto';
     this.domNode.className = 'prosemirror-editor-container';
@@ -102,6 +95,81 @@ class ProseMirrorEngine {
         return this.saveContentToFile(format, filename);
       };
 
+      // 添加文档变化分析工具
+      (window as any).analyzeProseMirrorChanges = () => {
+        // 初始化分析状态
+        console.log('初始文档内容:', docToText(this.editor.state.doc));
+
+        // 添加变化监听器
+        this.addEventListener('change', (data) => {
+          const { transaction, oldState, newState } = data;
+
+          console.group('ProseMirror 文档变化分析');
+
+          // 输出基本信息
+          console.log(
+            '变化类型:',
+            transaction.docChanged ? '内容变化' : '非内容变化'
+          );
+          console.log('步骤数量:', transaction.steps.length);
+
+          // 分析步骤
+          if (transaction.steps.length > 0) {
+            transaction.steps.forEach((step, index) => {
+              console.group(`步骤 ${index + 1} (${step.constructor.name})`);
+
+              try {
+                const stepJSON = step.toJSON();
+                console.log('步骤数据:', stepJSON);
+
+                // 根据步骤类型提供更详细的信息
+                if (step.constructor.name === 'ReplaceStep') {
+                  console.log('替换操作:');
+                  console.log('- 从位置:', stepJSON.from);
+                  console.log('- 到位置:', stepJSON.to);
+                  if (stepJSON.slice) {
+                    console.log('- 插入内容:', stepJSON.slice);
+                  }
+                } else if (step.constructor.name === 'AddMarkStep') {
+                  console.log('添加标记操作:');
+                  console.log('- 从位置:', stepJSON.from);
+                  console.log('- 到位置:', stepJSON.to);
+                  console.log('- 标记类型:', stepJSON.mark);
+                } else if (step.constructor.name === 'RemoveMarkStep') {
+                  console.log('移除标记操作:');
+                  console.log('- 从位置:', stepJSON.from);
+                  console.log('- 到位置:', stepJSON.to);
+                  console.log('- 标记类型:', stepJSON.mark);
+                }
+
+                // 获取映射信息
+                const map = step.getMap();
+                console.log('位置映射:', map);
+              } catch (e) {
+                console.error('分析步骤时出错:', e);
+              }
+
+              console.groupEnd();
+            });
+          }
+
+          // 比较文档差异
+          console.group('文档差异');
+          console.log('旧文档:', docToText(oldState.doc));
+          console.log('新文档:', docToText(newState.doc));
+          console.groupEnd();
+
+          // 文档状态已更新
+
+          console.groupEnd();
+        });
+
+        console.log('ProseMirror 文档变化分析工具已启用');
+        console.log('所有文档变化将在控制台中显示详细信息');
+
+        return '文档变化分析工具已启用';
+      };
+
       // 添加事件监听方法
       (window as any).addProseMirrorEventListener = (
         eventType: EditorEventType,
@@ -118,7 +186,8 @@ class ProseMirrorEngine {
         this.removeEventListener(eventType, listener);
       };
 
-      console.log('ProseMirror 编辑器已初始化。可以使用以下方法：');
+      console.group('ProseMirror 编辑器已初始化');
+      console.log('可以使用以下方法：');
       console.log('- getProseMirrorContent(): 获取编辑器内容');
       console.log('- exportProseMirrorContent(format): 导出并复制编辑器内容');
       console.log(
@@ -130,6 +199,23 @@ class ProseMirrorEngine {
       console.log(
         '- removeProseMirrorEventListener(eventType, listener): 移除事件监听器'
       );
+      console.log('- analyzeProseMirrorChanges(): 启用文档变化分析工具');
+
+      console.log('\n文档变化分析:');
+      console.log(
+        '在控制台中运行 analyzeProseMirrorChanges() 可以启用详细的文档变化分析'
+      );
+      console.log('这将显示每次编辑操作的详细信息，包括:');
+      console.log('- 变化类型（内容变化或非内容变化）');
+      console.log('- 步骤数量和类型');
+      console.log('- 每个步骤的详细信息');
+      console.log('- 变化前后的文档内容');
+
+      console.log('\n示例:');
+      console.log('1. 在控制台中运行: analyzeProseMirrorChanges()');
+      console.log('2. 在编辑器中进行一些编辑操作');
+      console.log('3. 查看控制台中的详细日志');
+      console.groupEnd();
     }
 
     // 初始化ProseMirror状态
@@ -182,6 +268,7 @@ class ProseMirrorEngine {
       plugins.push(gapCursor());
     }
 
+    console.log(options.value, 'vanilla text');
     this.state = EditorState.create({
       schema,
       // 使用markdown模块处理初始文本
@@ -202,48 +289,93 @@ class ProseMirrorEngine {
         const newState = oldState.apply(transaction);
         this.editor.updateState(newState);
 
+        // 输出 docChanged 相关日志
+        console.group('ProseMirror Transaction');
+        console.log('Transaction:', transaction);
+        console.log('docChanged:', transaction.docChanged);
+
+        // 如果有步骤，输出步骤信息
+        if (transaction.steps.length > 0) {
+          console.log('Steps:', transaction.steps);
+          console.log('Steps Count:', transaction.steps.length);
+
+          // 输出每个步骤的详细信息
+          transaction.steps.forEach((step, index) => {
+            console.group(`Step ${index + 1}`);
+            console.log('Step Type:', step.constructor.name);
+            console.log('Step JSON:', step.toJSON());
+            console.log('Step Map:', step.getMap());
+            console.groupEnd();
+          });
+        }
+
+        // 尝试获取事务的元数据（如果可能）
+        try {
+          // 使用 Object.keys 检查事务对象上的属性
+          const transactionKeys = Object.keys(transaction);
+          if (
+            transactionKeys.includes('meta') ||
+            transactionKeys.includes('_meta')
+          ) {
+            console.log('Transaction 可能包含元数据');
+          }
+        } catch (e) {
+          console.log('无法访问事务元数据');
+        }
+
+        console.groupEnd();
+
         // 如果内容发生变化
         if (transaction.docChanged) {
+          console.log('文档内容已更改!');
+          console.log(this.widget);
+
+          // 获取变更前后的内容
+          const oldContent = docToText(oldState.doc);
+          const newContent = docToText(newState.doc);
+
+          // 输出变更前后的内容
+          console.group('文档内容变更');
+          console.log('变更前 (Markdown):', oldContent);
+          console.log('变更后 (Markdown):', newContent);
+          console.log('变更前 (纯文本):', extractPlainText(oldState.doc));
+          console.log('变更后 (纯文本):', extractPlainText(newState.doc));
+          console.groupEnd();
+
           // 触发change事件
           this.triggerEvent('change', {
             transaction,
             oldState,
             newState,
             content: {
-              markdown: docToText(newState.doc),
+              markdown: newContent,
               plainText: extractPlainText(newState.doc)
             }
           });
 
-          // 根据配置决定是否自动保存
-          if (config.autoSave()) {
-            this.widget.saveChanges && this.widget.saveChanges();
+          // 获取 Markdown 文本内容
+          const markdownContent = docToText(newState.doc);
+
+          // 调用 saveChanges 并传递 Markdown 文本
+          if (this.widget.saveChanges) {
+            this.widget.saveChanges(markdownContent);
+            console.log('保存的 Markdown 内容:', markdownContent);
           }
+
+          // 根据配置决定是否自动保存
+          if (config.autoSave() && this.widget.saveChanges) {
+            this.widget.saveChanges(markdownContent);
+          }
+        } else {
+          console.log('文档内容未更改，可能是选择或其他非内容变更');
         }
       },
       // 处理焦点事件
-      handleDOMEvents: {
-        focus: (view, event) => {
-          this.triggerEvent('focus', { view, event });
-          return false; // 返回false以允许其他处理程序处理事件
-        },
-        blur: (view, event) => {
-          this.triggerEvent('blur', { view, event });
-          return false;
-        },
-        keydown: (view, event) => {
-          this.triggerEvent('keydown', { view, event });
-          return false;
-        },
-        keyup: (view, event) => {
-          this.triggerEvent('keyup', { view, event });
-          return false;
-        }
-      }
+      handleDOMEvents: {}
     });
 
     // 存储实例在DOM元素上
-    this.domNode.prosemirror = this.editor;
+    // this.domNode.prosemirror = this.editor;
   }
 
   handleDropEvent(event: DragEvent) {
@@ -278,15 +410,15 @@ class ProseMirrorEngine {
     }
 
     let widget = this.widget;
-    const keyboardWidgets = [];
+    const keyboardWidgets: IWidget[] = [];
     while (widget) {
       if (widget.parseTreeNode.type === 'keyboard') {
-        (keyboardWidgets as IWidget[]).push(widget);
+        keyboardWidgets.push(widget);
       }
       widget = widget.parentWidget as IWidget;
     }
     if (keyboardWidgets.length > 0) {
-      let handled = undefined;
+      let handled: boolean | undefined = undefined;
       for (let i = 0; i < keyboardWidgets.length; i++) {
         const keyboardWidget = keyboardWidgets[i];
         const keyInfoArray = keyboardWidget.keyInfoArray || [];
@@ -370,6 +502,8 @@ class ProseMirrorEngine {
         textarea.select();
 
         // 使用废弃的API作为后备方案
+        // 我们知道这个API已经废弃，但它仍然是一个有用的后备方案
+        // eslint-disable-next-line deprecation/deprecation
         const success = document.execCommand('copy');
         if (success) {
           console.log('使用旧方法复制成功');

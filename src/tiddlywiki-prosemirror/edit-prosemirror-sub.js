@@ -32,7 +32,6 @@ exports.prototype.handleEditTextOperationMessage = function (event) {
   var newText = this.engine.executeTextOperation(operation);
   // Fix the tiddler height and save changes
   this.engine.fixHeight();
-  console.log('newText', newText);
   this.saveChanges(newText);
 };
 

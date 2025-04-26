@@ -19,7 +19,7 @@ export interface IWidget {
   };
   parentWidget: IWidget | null;
   isFileDropEnabled?: boolean;
-  saveChanges?: () => void;
+  saveChanges?: (text?: string) => void;
   handleKeydownEvent: (e: KeyboardEvent) => boolean;
   keyInfoArray?: KeyInfo[];
 }

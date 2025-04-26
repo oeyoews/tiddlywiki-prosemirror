@@ -1,0 +1,20 @@
+title: $:/plugins/oeyoews/tiddlywiki-prosemirror/ui/console-markdown-button
+tags: $:/tags/EditorToolbar
+caption: {{$:/core/images/console}} 控制台输出
+description: 在控制台输出编辑器的Markdown内容
+condition: [<targetTiddler>]
+
+\define console-markdown-action()
+<$action-sendmessage $message="tm-notify" $param="$:/plugins/oeyoews/tiddlywiki-prosemirror/ui/console-markdown-notification"/>
+<$action-setfield $tiddler="$:/temp/console-command" $field="text" $value="console.log(`当前编辑器的Markdown内容：\n\n` + $tw.wiki.renderText('text/plain', 'text/vnd.tiddlywiki', '<<get-markdown \"$(currentTiddler)$\">>', {currentTiddler: '$(currentTiddler)$'}));" $paramObject="yes"/>
+<$action-sendmessage $message="tm-eval" expression={{{ [[$:/temp/console-command]get[text]] }}}/>
+\end
+
+<$button tooltip="在控制台输出Markdown内容" aria-label="控制台输出" class=<<tv-config-toolbar-class>> actions=<<console-markdown-action>>>
+<$list filter="[<tv-config-toolbar-icons>match[yes]]">
+{{$:/core/images/console}}
+</$list>
+<$list filter="[<tv-config-toolbar-text>match[yes]]">
+<span class="tc-btn-text">控制台输出</span>
+</$list>
+</$button>

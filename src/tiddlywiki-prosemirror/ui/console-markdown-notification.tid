@@ -1,0 +1,8 @@
+title: $:/plugins/oeyoews/tiddlywiki-prosemirror/ui/console-markdown-notification
+subtitle: 控制台输出
+tags: 
+type: text/vnd.tiddlywiki
+
+已在控制台输出编辑器的Markdown内容。
+
+请按F12或Ctrl+Shift+I打开开发者工具查看控制台输出。
