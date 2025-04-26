@@ -42,5 +42,15 @@ export default {
   // 是否强制使用Markdown
   forceMarkdown() {
     return this.getConfig('forceMarkdown', 'no') === 'yes';
+  },
+
+  // 是否启用斜杠命令
+  slashCommandsEnabled() {
+    return this.getConfig('slashCommandsEnabled', 'yes') === 'yes';
+  },
+
+  // 是否启用快捷键
+  keyboardShortcutsEnabled() {
+    return this.getConfig('keyboardShortcutsEnabled', 'yes') === 'yes';
   }
 };

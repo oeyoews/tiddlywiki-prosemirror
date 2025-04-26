@@ -10,6 +10,8 @@ import config from './config';
 import schema from './schema';
 import { textToDoc, docToText } from './markdown';
 import { markdownInputRules } from './input-rules';
+import { slashCommandsPlugin } from './slash-commands';
+import { editorKeymap } from './keyboard';
 
 interface IOptions {
   widget: IWidget;
@@ -46,9 +48,19 @@ class ProseMirrorEngine {
     // 初始化ProseMirror状态
     const plugins = [keymap(baseKeymap)];
 
+    // 添加快捷键支持
+    if (config.keyboardShortcutsEnabled()) {
+      plugins.push(editorKeymap);
+    }
+
     // 添加Markdown输入规则
     if (config.markdownEnabled()) {
       plugins.push(markdownInputRules);
+    }
+
+    // 添加斜杠命令支持
+    if (config.slashCommandsEnabled()) {
+      plugins.push(slashCommandsPlugin);
     }
 
     // 根据配置添加插件

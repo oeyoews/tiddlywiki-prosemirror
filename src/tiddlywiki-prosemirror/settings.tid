@@ -43,3 +43,15 @@ caption: ProseMirror
 <option value="yes">是</option>
 <option value="no">否</option>
 </$select> |
+
+!! 编辑器功能
+
+|<<lingo Settings/Heading>>|
+|启用斜杠命令 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/slashCommandsEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|启用快捷键 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/keyboardShortcutsEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |

@@ -12,3 +12,6 @@ type: text/vnd.tiddlywiki
 * 自动检测Markdown格式
 * 可配置的Markdown支持选项
 * 支持手动输入Markdown语法自动转换（如 ## 标题）
+* 支持斜杠命令（输入 / 快速插入内容）
+* 支持快捷键操作
+* 增强的Markdown语法支持（图片、表格、任务列表等）
