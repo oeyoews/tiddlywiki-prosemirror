@@ -52,5 +52,15 @@ export default {
   // 是否启用快捷键
   keyboardShortcutsEnabled() {
     return this.getConfig('keyboardShortcutsEnabled', 'yes') === 'yes';
+  },
+
+  // 是否启用占位符
+  placeholderEnabled() {
+    return this.getConfig('placeholderEnabled', 'yes') === 'yes';
+  },
+
+  // 获取占位符文本
+  getPlaceholder() {
+    return this.getConfig('placeholder', '在此输入内容...');
   }
 };

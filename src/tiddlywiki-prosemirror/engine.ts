@@ -13,6 +13,7 @@ import { markdownInputRules } from './input-rules';
 import { slashCommandsPlugin } from './slash-commands';
 import { editorKeymap } from './keyboard';
 import { taskListPlugin } from './task-list';
+import { placeholderPlugin } from './placeholder';
 
 interface IOptions {
   widget: IWidget;
@@ -66,6 +67,11 @@ class ProseMirrorEngine {
 
     // 添加任务列表支持
     plugins.push(taskListPlugin);
+
+    // 添加占位符支持
+    if (config.placeholderEnabled()) {
+      plugins.push(placeholderPlugin);
+    }
 
     // 根据配置添加插件
     if (config.historyEnabled()) {

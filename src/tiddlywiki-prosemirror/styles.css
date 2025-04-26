@@ -26,6 +26,15 @@ li.task-list-item[data-checked="true"]>div>p {
   color: #666;
 }
 
+/* 占位符样式 */
+.prosemirror-placeholder {
+  position: absolute;
+  color: #aaa;
+  pointer-events: none;
+  user-select: none;
+  font-style: italic;
+}
+
 /* 斜杠命令菜单样式 */
 .prosemirror-slash-menu {
   position: absolute;

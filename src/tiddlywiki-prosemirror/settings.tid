@@ -55,3 +55,8 @@ caption: ProseMirror
 <option value="yes">是</option>
 <option value="no">否</option>
 </$select> |
+|启用占位符 |<$select tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/placeholderEnabled" default="yes">
+<option value="yes">是</option>
+<option value="no">否</option>
+</$select> |
+|占位符文本 |<$edit-text tiddler="$:/plugins/oeyoews/tiddlywiki-prosemirror/config/placeholder" default="在此输入内容..." tag="input"/> |

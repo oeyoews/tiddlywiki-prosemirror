@@ -13,6 +13,7 @@ type: text/vnd.tiddlywiki
 * 支持Markdown语法
 * 支持斜杠命令（输入 / 快速插入内容）
 * 支持快捷键操作
+* 支持占位符提示
 * 可配置的编辑器行为
 
 !! Markdown支持
@@ -82,6 +83,8 @@ type: text/vnd.tiddlywiki
 * 强制使用Markdown格式
 * 启用/禁用斜杠命令
 * 启用/禁用快捷键
+* 启用/禁用占位符
+* 自定义占位符文本
 
 !! 使用方法
 
